@@ -57,7 +57,7 @@
     .favBox{border:1px solid color-mix(in srgb,#e6a700 40%,var(--line));background:color-mix(in srgb,#e6a700 7%,var(--card));border-radius:16px;padding:11px;margin-bottom:12px}.favItem{display:flex;align-items:center;gap:7px;padding:8px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}.favItem:last-child{border-bottom:0}.favItem .name{flex:1 1 150px;font-weight:750;min-width:0}.favItem .favOrder{display:flex;gap:4px}.favItem .favOrder .btn{min-width:36px;padding-inline:8px}
     .empty{padding:28px 12px;text-align:center;color:var(--muted)}
     .bottomNav{position:fixed;z-index:40;bottom:0;left:0;right:0;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
-    .bottomNavInner{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.navBtn{border:0;background:transparent;color:var(--muted);padding:7px 4px;border-radius:12px;font-size:11px;font-weight:750;display:grid;gap:2px;place-items:center}.navBtn .ico{font-size:19px}.navBtn.active{background:var(--soft);color:var(--accent)}
+    .bottomNavInner{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.navBtn{border:0;background:transparent;color:var(--muted);padding:7px 4px;border-radius:12px;font-size:11px;font-weight:750;display:grid;gap:2px;place-items:center}.navBtn .ico{font-size:19px}.navBtn.active{background:var(--soft);color:var(--accent)}
     .modal{position:fixed;inset:0;z-index:100;background:rgba(3,10,13,.58);display:none;align-items:flex-end;justify-content:center}.modal.open{display:flex}.sheet{background:var(--card);width:min(720px,100%);max-height:94vh;border-radius:24px 24px 0 0;border:1px solid var(--line);box-shadow:0 -18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column}.sheetHeader{padding:14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}.sheetBody{padding:14px;overflow:auto}.sheetFooter{padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:8px;background:var(--card)}.sheetFooter .btn{flex:1}.sendFooter{display:grid;grid-template-columns:1fr;gap:8px}.sendFooter>.btn{width:100%;flex:none}.sendSecondaryRow{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:8px}.sendSecondaryRow .btn{min-width:0;padding-inline:8px;font-size:13px;min-height:42px}.sendState{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:850;color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--card));padding:4px 7px;border-radius:999px}.closeBtn{margin-left:auto;border:0;background:var(--card2);color:var(--text);width:38px;height:38px;border-radius:12px}
     .progress{font-size:12px;color:var(--muted);font-weight:800}.personHead{padding:11px;border:1px solid var(--line);background:var(--card2);border-radius:14px;margin-bottom:10px}.personHead strong{font-size:16px}.fieldRow{border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:9px;background:var(--card2)}.fieldRow .field{margin:0}.subcheck{display:flex;align-items:center;gap:7px;margin-top:8px;color:var(--muted);font-size:12px}.subcheck input{width:18px;height:18px}.req{color:var(--danger)}
     .previewBox{white-space:pre-wrap;border:1px solid var(--line);background:var(--card2);padding:12px;border-radius:14px;min-height:80px;font-size:14px}.waPreview strong{font-weight:850}.waPreview em{font-style:italic}.waPreview del{opacity:.75}.waPreview code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:color-mix(in srgb,var(--text) 8%,transparent);padding:1px 4px;border-radius:5px}.waPreview blockquote{margin:3px 0;padding-left:9px;border-left:3px solid var(--accent);color:var(--muted)}
@@ -83,7 +83,14 @@
     .fieldRows{max-height:46vh;overflow:auto;padding:0 2px 3px}.fieldRows .fieldRow{margin-bottom:7px;padding:9px}
     .editorFooterRow{display:flex;justify-content:flex-end;margin:5px 0}.editorFooterRow button{min-height:34px}
     .sheetBody:has(.composeTextarea){padding-top:10px}.sheetHeader:has(#completeTitle){padding-block:10px}
-    @media (max-width:420px){.composeSetting{padding:9px}.scopeSwitch button{font-size:11px}.sendSecondaryRow .btn{font-size:12px}}
+    @media (max-width:420px){.composeSetting{padding:9px}.scopeSwitch button{font-size:11px}.sendSecondaryRow .btn{font-size:12px}.navBtn{font-size:10px;padding-inline:1px}}
+    /* Yarım kalan çalışmayı tek bir yerden, içeriğini bozmadan yönet. */
+    .draftStudent{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:7px;background:var(--card2)}
+    .draftStudent .draftStudentText{flex:1;min-width:0}.draftStudent .draftStudentText strong{display:block;overflow-wrap:anywhere}
+    .draftStudent .btn{flex:0 0 auto}.draftStats{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+    .draftAddResults{max-height:290px;overflow:auto;margin-top:8px}.draftAddResults .draftStudent{margin-top:6px}
+    .draftActions{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}.draftActions .btn{flex:1 1 140px}
+    @media (max-width:375px){.draftStudent{flex-wrap:wrap}.draftStudent .btn{margin-left:auto}}
   </style>
 </head>
 <body>
@@ -91,7 +98,7 @@
   <header class="topbar">
     <div class="titleRow">
       <div class="logo">FM</div>
-      <div><div class="title">Veli Mesaj Merkezi</div><div class="subtitle">Öğrenci seç → mesajı seç → WhatsApp'ta aç</div></div>
+      <div><div class="title">Veli Mesaj Merkezi</div><div class="subtitle">Öğrenci seç → hazır veya boş mesaj → WhatsApp</div></div>
       <div class="spacer"></div>
       <button class="iconBtn" id="themeBtn" aria-label="Tema">◐</button>
     </div>
@@ -117,11 +124,12 @@
         <div class="row wrap" style="margin-top:9px"><button id="selectAllBtn" class="btn secondary small">Tümünü Seç</button><button id="clearSelectionBtn" class="btn secondary small">Seçimi Kaldır</button><span class="hint" id="visibleCount"></span></div>
         <div id="studentList" class="studentList"></div>
       </div>
-      <div class="stickyAction"><button id="goMessagesBtn" class="btn">Hazır Mesajlara Geç →</button></div>
+      <div class="stickyAction" style="display:grid;gap:8px"><button id="goBlankBtn" class="btn">✏️ Boş Mesaj Oluştur</button><button id="goMessagesBtn" class="btn secondary">Hazır Mesajlara Geç →</button></div>
     </section>
 
     <section id="panel-messages" class="panel">
-      <div class="row" style="margin-bottom:10px"><button class="backBtn" data-go="students">← Öğrencilere</button><div class="spacer"></div><span class="counterPill" id="messageCountPill">200 standart mesaj</span></div>
+      <div class="row wrap" style="margin-bottom:10px"><button class="backBtn" data-go="students">← Öğrencilere</button><div class="spacer"></div><span class="counterPill" id="messageCountPill">200 standart mesaj</span></div>
+      <div class="section"><strong>Kendi mesajınızı yazın</strong><p class="hint">Hazır mesaj seçmek zorunda değilsiniz. Seçili öğrencilere boş bir metinden başlayabilirsiniz.</p><button id="goBlankFromMessagesBtn" class="btn" style="width:100%;margin-top:10px">✏️ Boş Mesajla Devam Et</button></div>
       <div id="hiddenMessagesNotice" class="section" style="display:none"></div>
       <div id="messagesContent">
         <div class="section">
@@ -135,6 +143,14 @@
           <div class="chips" id="categoryChips"></div>
           <div id="messageGrid" class="messageGrid" style="margin-top:10px"></div>
         </div>
+      </div>
+    </section>
+
+    <section id="panel-drafts" class="panel">
+      <div class="section">
+        <div class="row"><h2 class="sectionTitle">📝 Taslak Yönetimi</h2><div class="spacer"></div><span id="draftCount" class="counterPill">0 öğrenci</span></div>
+        <p class="hint">Yarım kalan çalışmanın öğrenci listesini buradan görebilir, öğrenci ekleyebilir veya çıkarabilirsiniz. Mesaj düzenlemeleri ve ilerleme korunur.</p>
+        <div id="draftManagement"></div>
       </div>
     </section>
 
@@ -196,6 +212,7 @@ MESAJ:
 <nav class="bottomNav"><div class="bottomNavInner">
   <button class="navBtn active" data-tab="students"><span class="ico">👥</span><span>Öğrenciler</span></button>
   <button class="navBtn" data-tab="messages"><span class="ico">💬</span><span>Mesajlar</span></button>
+  <button class="navBtn" data-tab="drafts"><span class="ico">📝</span><span>Taslak</span></button>
   <button class="navBtn" data-tab="special"><span class="ico">✨</span><span>Özel İstek</span></button>
   <button class="navBtn" data-tab="settings"><span class="ico">⚙️</span><span>Ayarlar</span></button>
 </div></nav>
@@ -237,6 +254,7 @@ const firebaseConfig={apiKey:'AIzaSyAIzu6aNQstwQCdMWODyIwiaVVBm63OeGw',authDomai
 const CATEGORIES=['LGS','Deneme','Ödev','Çalışma Takibi','Veliye Soru','Olumlu Geri Bildirim','Uyarı/Hatırlatma','Görüşme','Gelişim ve Hedef','Motivasyon','Devam ve Dakiklik','Ders Katılımı','Davranış ve Sınıf','Materyal ve Hazırlık','Okuma','Proje ve Etkinlik','Rehberlik ve Öz Düzenleme','Duyuru ve Hatırlatma','Fen ve Laboratuvar','Sosyal-Duygusal','Dijital Denge','Aile İş Birliği','Diğer'];
 const RESERVED=new Set(['ADSOYAD','SINIF','TELEFON','NO']);
 const SIGNATURE_DEFAULT='Ferhat Karagöz\nFen Bilimleri Öğretmeni\nFenomen Eğitim Kurumları';
+const BLANK_TEMPLATE={id:'__blank__',title:'Boş Mesaj',category:'Diğer',body:'',fields:[],source:'custom'};
 
 const T=(id,title,category,body)=>({id,title,category,body,source:'system'});
 const SYSTEM_TEMPLATES=[
@@ -452,7 +470,7 @@ const FIELD_META={
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const state={students:[],selected:new Set(),classFilters:new Set(),studentSearch:'',messageSearch:'',category:'Tümü',generated:{},overrides:{},favorites:[],settings:{signatureDefault:false,signatureText:SIGNATURE_DEFAULT,hideAllMessages:false,favoriteLimit:APP_CONFIG.favoriteDefault,recentMessages:[]},db:null,batch:null,editing:null,editorFields:[],draftCandidate:null,currentTab:'students'};
-let toastTimer=null,draftTimer=null,bulkEditTimer=null,undoToastTimer=null;
+let toastTimer=null,draftTimer=null,bulkEditTimer=null,undoToastTimer=null,draftStudentSearch='';
 
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2600)}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -477,7 +495,7 @@ function mergedTemplates(){
   const generated=Object.entries(state.generated||{}).map(([id,t])=>({...t,id,source:'generated',fields:detectFields(t.body,t.fields||[])}));
   return [...sys,...generated];
 }
-function templateById(id){return mergedTemplates().find(t=>t.id===id)}
+function templateById(id){return id===BLANK_TEMPLATE.id?BLANK_TEMPLATE:mergedTemplates().find(t=>t.id===id)}
 function studentValues(s){return {ADSOYAD:s?.name||'',SINIF:s?.class||'',TELEFON:s?.phone?.display||'',NO:s?.no||''}}
 function formatDateTR(v){if(!/^\d{4}-\d{2}-\d{2}$/.test(v||''))return v||'';const [y,m,d]=v.split('-');return `${d}.${m}.${y}`}
 function displayValue(field,v){return field.type==='date'?formatDateTR(v):v}
@@ -497,10 +515,10 @@ async function kvGet(k){try{const db=await idbOpen();return await new Promise((r
 async function kvDel(k){try{const db=await idbOpen();await new Promise((res,rej)=>{const tx=db.transaction(IDB_STORE,'readwrite');tx.objectStore(IDB_STORE).delete(k);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch{localStorage.removeItem('fm_'+k)}}
 
 function snapshotBatch(){if(!state.batch)return null;const {bulkEditBase,lastBulkEdit,...rest}=state.batch;return {...rest,sharedKeys:[...state.batch.sharedKeys],savedAt:Date.now()}}
-function scheduleDraftSave(){clearTimeout(draftTimer);draftTimer=setTimeout(()=>saveDraft(),220)}
-async function saveDraft(){if(state.batch)await kvSet('activeBatch',snapshotBatch())}
-async function clearDraft(){state.batch=null;state.draftCandidate=null;clearTimeout(bulkEditTimer);$('#undoToast')?.classList.remove('show');await kvDel('activeBatch');$('#recoveryBox').classList.remove('show')}
-async function inspectDraft(){if(state.batch||!state.students.length)return;const d=await kvGet('activeBatch');if(!d)return;if(!d.savedAt||Date.now()-d.savedAt>7*24*3600*1000){await kvDel('activeBatch');return}if(d.awaitingReturn){d.awaitingReturn=false;state.draftCandidate=null;$('#recoveryBox').classList.remove('show');openComplete(d.templateId,d);toast(d.batchComplete?'Toplu gönderim özeti hazır.':'Sıradaki öğrenci hazır.');return}state.draftCandidate=d;const t=templateById(d.templateId);$('#recoveryText').textContent=`${t?.title||'Hazır mesaj'} · ${d.studentIds?.length||0} öğrenci · ${new Date(d.savedAt).toLocaleString('tr-TR')}`;$('#recoveryBox').classList.add('show')}
+function scheduleDraftSave(){clearTimeout(draftTimer);draftTimer=setTimeout(()=>saveDraft(),220);renderDraftManagement()}
+async function saveDraft(){if(state.batch)await kvSet('activeBatch',snapshotBatch());renderDraftManagement()}
+async function clearDraft(){state.batch=null;state.draftCandidate=null;clearTimeout(draftTimer);clearTimeout(bulkEditTimer);$('#undoToast')?.classList.remove('show');localStorage.removeItem('fm_emergencyDraft');await kvDel('activeBatch');$('#recoveryBox').classList.remove('show');renderDraftManagement()}
+async function inspectDraft(){if(state.batch||!state.students.length)return;const d=await kvGet('activeBatch');if(!d)return;if(!d.savedAt||Date.now()-d.savedAt>7*24*3600*1000){await kvDel('activeBatch');renderDraftManagement();return}if(d.awaitingReturn){d.awaitingReturn=false;state.draftCandidate=null;$('#recoveryBox').classList.remove('show');openComplete(d.templateId,d);toast(d.batchComplete?'Toplu gönderim özeti hazır.':'Sıradaki öğrenci hazır.');return}state.draftCandidate=d;const t=templateById(d.templateId);$('#recoveryText').textContent=`${t?.title||'Mesaj'} · ${d.studentIds?.length||0} öğrenci · ${new Date(d.savedAt).toLocaleString('tr-TR')}`;$('#recoveryBox').classList.add('show');renderDraftManagement()}
 
 async function loadStudents(){setSheetStatus('Öğrenciler: güncelleniyor…','');try{const arr=await fetchSheetJSONP();if(!arr.length)throw new Error('Öğrenci bulunamadı');state.students=arr.sort(sortStudents);await kvSet('studentsCache',{savedAt:Date.now(),students:state.students});setSheetStatus(`Öğrenciler: ${arr.length} güncel`,'ok');renderStudents();await inspectDraft()}catch(err){const cache=await kvGet('studentsCache');if(cache?.students?.length){state.students=cache.students;setSheetStatus(`Çevrimdışı veri: ${cache.students.length}`,'warn');renderStudents();toast('Google Sheet okunamadı; son kayıtlı öğrenci listesi gösteriliyor.');await inspectDraft()}else{state.students=[];setSheetStatus('Öğrenciler alınamadı','warn');renderStudents();toast('Google Sheet okunamadı. Paylaşım erişimini kontrol edin.')}}}
 function setSheetStatus(text,cls){const e=$('#sheetStatus');e.textContent=text;e.className='badge '+cls}
@@ -509,9 +527,9 @@ function fetchSheetJSONP(){return new Promise((resolve,reject)=>{const cb='__fmS
 function renderStudents(){const classes=[...new Set(state.students.map(s=>s.class).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr',{numeric:true}));$('#classChips').innerHTML=classes.map(c=>`<button class="chip ${state.classFilters.has(c)?'active':''}" data-class="${esc(c)}">${esc(c)}</button>`).join('')||'<span class="hint">Sınıf bilgisi bulunamadı.</span>';
   const q=state.studentSearch.trim().toLocaleLowerCase('tr-TR');const visible=state.students.filter(s=>(!state.classFilters.size||state.classFilters.has(s.class))&&(!q||s.name.toLocaleLowerCase('tr-TR').includes(q)||s.class.toLocaleLowerCase('tr-TR').includes(q)));
   $('#visibleCount').textContent=`${visible.length} öğrenci gösteriliyor`;
-  $('#studentList').innerHTML=visible.map(s=>`<div class="student ${state.selected.has(s.id)?'selected':''}" data-student="${s.id}"><div class="check">${state.selected.has(s.id)?'✓':''}</div><div style="min-width:0;flex:1"><div class="sname">${esc(s.name)}</div><div class="smeta">${esc(s.class)} · <span class="${s.phone.valid?'':'phoneInvalid'}">${esc(s.phone.display||'Telefon yok')}</span></div></div></div>`).join('')||'<div class="empty">Bu filtreye uygun öğrenci bulunamadı.</div>';updateSelectedStatus()}
+  $('#studentList').innerHTML=visible.map(s=>`<div class="student ${state.selected.has(s.id)?'selected':''}" data-student="${s.id}"><div class="check">${state.selected.has(s.id)?'✓':''}</div><div style="min-width:0;flex:1"><div class="sname">${esc(s.name)}</div><div class="smeta">${esc(s.class)} · <span class="${s.phone.valid?'':'phoneInvalid'}">${esc(s.phone.display||'Telefon yok')}</span></div></div></div>`).join('')||'<div class="empty">Bu filtreye uygun öğrenci bulunamadı.</div>';updateSelectedStatus();if(state.currentTab==='drafts')renderDraftManagement()}
 function visibleStudents(){const q=state.studentSearch.trim().toLocaleLowerCase('tr-TR');return state.students.filter(s=>(!state.classFilters.size||state.classFilters.has(s.class))&&(!q||s.name.toLocaleLowerCase('tr-TR').includes(q)||s.class.toLocaleLowerCase('tr-TR').includes(q)))}
-function updateSelectedStatus(){const n=state.selected.size;$('#selectedStatus').textContent=`${n} öğrenci seçili`;$('#selectedStatus').className='badge '+(n?'ok':'');$('#goMessagesBtn').disabled=!n}
+function updateSelectedStatus(){const n=state.selected.size;$('#selectedStatus').textContent=`${n} öğrenci seçili`;$('#selectedStatus').className='badge '+(n?'ok':'');$('#goMessagesBtn').disabled=!n;$('#goBlankBtn').disabled=!n;$('#goBlankFromMessagesBtn').disabled=!n}
 
 function favoriteLimit(){const n=parseInt(state.settings.favoriteLimit,10);return Math.max(APP_CONFIG.favoriteMin,Math.min(APP_CONFIG.favoriteMax,Number.isFinite(n)?n:APP_CONFIG.favoriteDefault))}
 function recentIds(){return Array.isArray(state.settings.recentMessages)?state.settings.recentMessages:[]}
@@ -527,21 +545,65 @@ async function toggleFavorite(id){let a=[...state.favorites];if(a.includes(id))a
 async function moveFavorite(i,delta){const a=[...state.favorites],j=i+delta;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];state.favorites=a;await saveRemote('favorites',a);renderMessages()}
 
 function own(obj,key){return Object.prototype.hasOwnProperty.call(obj||{},key)}
+// Tek taslak vardır: mevcut çalışmaya ekleme/çıkarma yapılır, başka çalışmayla sessizce değiştirilmez.
+function renderDraftAvailable(){
+  const target=$('#draftAddResults'),d=state.batch||state.draftCandidate;if(!target||!d)return;
+  const used=new Set(d.studentIds||[]),q=draftStudentSearch.trim().toLocaleLowerCase('tr-TR');
+  const available=state.students.filter(s=>!used.has(s.id)&&(!q||`${s.name} ${s.class} ${s.no||''}`.toLocaleLowerCase('tr-TR').includes(q))).sort(sortStudents);
+  target.innerHTML=available.slice(0,20).map(s=>`<div class="draftStudent"><div class="draftStudentText"><strong>${esc(s.name)}</strong><span class="smeta">${esc(s.class)} · ${esc(s.phone.display||'Telefon yok')}</span></div><button class="btn secondary small" data-draft-add="${esc(s.id)}">+ Ekle</button></div>`).join('')||'<p class="hint">Eklenebilecek öğrenci bulunamadı.</p>';
+  if(available.length>20)target.insertAdjacentHTML('beforeend',`<p class="hint">${available.length} sonuç var. Diğer öğrenciler için arama alanını kullanın.</p>`);
+}
+function renderDraftManagement(){
+  const target=$('#draftManagement');if(!target)return;const d=state.batch||state.draftCandidate;
+  $('#draftCount').textContent=`${d?.studentIds?.length||0} öğrenci`;
+  if(!d){target.innerHTML='<div class="empty">Kayıtlı çalışma taslağı yok. Öğrencileri seçip boş mesaj ya da hazır mesaj oluşturduğunuzda burada görünür.</div><button type="button" class="btn secondary" data-draft-go-students>Öğrencilerden Başla</button>';return}
+  const ids=d.studentIds||[],done=ids.filter(id=>!!d.opened?.[id]).length,t=templateById(d.templateId);
+  const selectedNew=[...state.selected].filter(id=>!ids.includes(id)&&!!getStudent(id)).length;
+  target.innerHTML=`<div class="draftStats"><span class="badge">${esc(t?.title||'Mesaj')}</span><span class="badge ok">${done} WhatsApp bağlantısı açıldı</span><span class="badge">${ids.length-done} bekliyor</span></div>
+    <div class="draftActions"><button class="btn" data-draft-resume>▶ Taslağa Devam Et</button><button class="btn secondary" data-draft-add-selected ${selectedNew?'':'disabled'}>Seçilenleri Ekle (${selectedNew})</button></div>
+    <h3 style="margin-top:14px">Taslağa kayıtlı öğrenciler</h3><div id="draftMemberList">${ids.map((id,i)=>{const s=getStudent(id);return `<div class="draftStudent"><div class="draftStudentText"><strong>${i+1}. ${esc(s?.name||'Listede bulunamayan öğrenci')}</strong><span class="smeta">${esc(s?.class||'Öğrenci kaydı güncel listede yok')} · ${d.opened?.[id]?'✓ WhatsApp bağlantısı açıldı':'Henüz açılmadı'}</span></div><button class="btn secondary small" data-draft-remove="${esc(id)}" aria-label="Öğrenciyi taslaktan çıkar">Çıkar</button></div>`}).join('')}</div>
+    <div class="divider"></div><h3>+ Taslağa öğrenci ekle</h3><p class="hint">Aşağıdan öğrenci arayın veya Öğrenciler sekmesinde seçtiklerinizi topluca ekleyin.</p>
+    <div class="field"><input type="search" id="draftStudentSearch" value="${esc(draftStudentSearch)}" placeholder="Ad, sınıf veya öğrenci numarasıyla ara…" autocomplete="off" aria-label="Taslağa öğrenci ara"></div>
+    <div id="draftAddResults" class="draftAddResults"></div>
+    <div class="divider"></div><button class="btn danger small" data-draft-clear>🗑 Taslağı Tamamen Sil</button>`;
+  renderDraftAvailable();
+}
+function activateDraft(){const d=state.batch||state.draftCandidate;if(!d)return false;if(state.batch)return true;return startBatch(d.templateId,d)}
+function addStudentsToDraft(ids){
+  if(!activateDraft())return;const b=state.batch,t=templateById(b.templateId),ref=currentBatchStudent();let added=0,firstNewIndex=b.studentIds.length;
+  for(const id of ids){const s=getStudent(id);if(!s||b.studentIds.includes(id))continue;
+    b.studentIds.push(id);b.values[id]={};for(const key of b.sharedKeys)if(ref&&own(b.values[ref.id],key))b.values[id][key]=b.values[ref.id][key];
+    if(b.pinMessage&&b.pinnedPattern){b.manualPatterns[id]=b.pinnedPattern;b.manualTexts[id]=materializePattern(b.pinnedPattern,t,s,b.values[id])}
+    state.selected.add(id);added++;
+  }
+  if(!added)return toast('Eklenecek yeni öğrenci bulunamadı.');
+  if(b.batchComplete){b.batchComplete=false;b.index=firstNewIndex}
+  renderStudents();if($('#completeModal').classList.contains('open'))renderComplete();scheduleDraftSave();toast(`${added} öğrenci taslağa eklendi.`);
+}
+async function removeStudentFromDraft(id){
+  if(!activateDraft())return;const b=state.batch,pos=b.studentIds.indexOf(id);if(pos<0)return;
+  if(b.studentIds.length===1){if(!confirm('Bu son öğrencidir. Çıkarırsanız bütün çalışma taslağı silinir. Devam edilsin mi?'))return;await clearDraft();closeModal('completeModal');return}
+  const s=getStudent(id);if(!confirm(`${s?.name||'Seçilen öğrenci'} taslaktan çıkarılsın mı? Bu öğrenciye ait düzenleme ve bağlantı bilgisi silinir.`))return;
+  b.studentIds.splice(pos,1);delete b.values[id];delete b.manualTexts[id];delete b.manualPatterns[id];delete b.autoNet[id];delete b.opened[id];state.selected.delete(id);
+  if(pos<b.index)b.index--;b.index=Math.min(b.index,b.studentIds.length-1);
+  if(b.batchComplete&&b.studentIds.some(studentId=>!b.opened[studentId]))b.batchComplete=false;
+  renderStudents();if($('#completeModal').classList.contains('open'))renderComplete();scheduleDraftSave();toast('Öğrenci taslaktan çıkarıldı.');
+}
 function startBatch(templateId,existingBatch=null){
   if(!state.selected.size&&!existingBatch){toast('Önce en az bir öğrenci seçin.');return false}
   const t=templateById(templateId);if(!t){toast('Hazır mesaj bulunamadı.');return false}
   if(existingBatch){
     state.batch={...existingBatch,values:existingBatch.values||{},manualTexts:existingBatch.manualTexts||{},manualPatterns:existingBatch.manualPatterns||{},autoNet:existingBatch.autoNet||{},opened:existingBatch.opened||{},sharedKeys:new Set(existingBatch.sharedKeys||[]),pinMessage:!!existingBatch.pinMessage,pinnedPattern:existingBatch.pinnedPattern||'',signatureText:existingBatch.signatureText??state.settings.signatureText??SIGNATURE_DEFAULT,awaitingReturn:false};
-    state.selected=new Set(existingBatch.studentIds||[]);updateSelectedStatus();
+    state.selected=new Set(existingBatch.studentIds||[]);state.draftCandidate=null;$('#recoveryBox').classList.remove('show');updateSelectedStatus();
   }else{
     const ids=[...state.selected].map(getStudent).filter(Boolean).sort(sortStudents).map(s=>s.id),fs=fieldsFor(t);
     if(!ids.length){toast('Seçilen öğrenciler bulunamadı. Listeyi yenileyin.');return false}
-    state.batch={templateId:t.id,studentIds:ids,index:0,values:{},manualTexts:{},manualPatterns:{},opened:{},sharedKeys:new Set(fs.filter(f=>f.shared).map(f=>f.key)),autoNet:{},includeSignature:!!state.settings.signatureDefault,signatureText:state.settings.signatureText||SIGNATURE_DEFAULT,pinMessage:false,pinnedPattern:'',awaitingReturn:false,resumeView:'complete',batchComplete:false,createdAt:Date.now()};
-    for(const id of ids)state.batch.values[id]={};markRecent(t.id);
+    state.batch={templateId:t.id,studentIds:ids,index:0,values:{},manualTexts:{},manualPatterns:{},opened:{},sharedKeys:new Set(fs.filter(f=>f.shared).map(f=>f.key)),autoNet:{},includeSignature:t.id===BLANK_TEMPLATE.id?false:!!state.settings.signatureDefault,signatureText:state.settings.signatureText||SIGNATURE_DEFAULT,pinMessage:t.id===BLANK_TEMPLATE.id&&ids.length>1,pinnedPattern:'',awaitingReturn:false,resumeView:'complete',batchComplete:false,createdAt:Date.now()};
+    for(const id of ids)state.batch.values[id]={};if(t.id!==BLANK_TEMPLATE.id)markRecent(t.id);
   }
   scheduleDraftSave();return true
 }
-function openComplete(templateId,existingBatch=null){if(!startBatch(templateId,existingBatch))return;renderComplete();openModal('completeModal')}
+function openComplete(templateId,existingBatch=null){if(!existingBatch&&(state.batch||state.draftCandidate)&&!confirm('Mevcut çalışma taslağı yeni mesajla değiştirilecek. Mevcut taslağı bırakıp devam etmek istiyor musunuz?'))return;if(!startBatch(templateId,existingBatch))return;renderComplete();openModal('completeModal')}
 function useTemplate(templateId){return openComplete(templateId)} // Önizleme ve düzenleme hiçbir zaman atlanmaz.
 function currentBatchStudent(){return getStudent(state.batch?.studentIds?.[state.batch.index])}
 function openedCount(){return Object.keys(state.batch?.opened||{}).length}
@@ -550,7 +612,7 @@ function appendSignature(text,signature){const sig=String(signature||'').trim();
 function stripSignature(text,signature){const sig=String(signature||'').trim();let body=String(text??'');if(sig&&body.trimEnd().endsWith(sig)){body=body.trimEnd().slice(0,-sig.length).trimEnd()}return body}
 function generatedBatchText(t,s,vals,b){let text=materialize(t,s,vals,false,false);return b.includeSignature?appendSignature(text,b.signatureText):text}
 function batchTextFor(id){const b=state.batch,t=templateById(b?.templateId),s=getStudent(id);if(!b||!t||!s)return '';const vals=b.values[id]||{};if(own(b.manualTexts,id))return b.manualTexts[id];if(b.pinMessage&&b.pinnedPattern)return materializePattern(b.pinnedPattern,t,s,vals);return generatedBatchText(t,s,vals,b)}
-function updateInlineMeta(){const el=$('#inlineComposerText');if(!el)return;const b=state.batch,s=currentBatchStudent();$('#charCount').textContent=el.value.length+' karakter';const note=$('#inlineDraftState');if(note&&b&&s)note.textContent=own(b.manualTexts,s.id)?'Düzenleme taslakta saklanır':'Hazır mesaj düzenlenebilir';refreshCompletePreview()}
+function updateInlineMeta(){const el=$('#inlineComposerText');if(!el)return;const b=state.batch,s=currentBatchStudent();$('#charCount').textContent=el.value.length+' karakter';const note=$('#inlineDraftState');if(note&&b&&s)note.textContent=own(b.manualTexts,s.id)?'Düzenleme taslakta saklanır':(b.templateId===BLANK_TEMPLATE.id?'Mesajınızı buraya yazın':'Hazır mesaj düzenlenebilir');refreshCompletePreview()}
 function renderComplete(){
   const b=state.batch,t=templateById(b?.templateId);if(!b||!t){closeModal('completeModal');return}
   const footer=$('#completeFooter');
@@ -577,7 +639,7 @@ function renderComplete(){
     }
     html+='</div></details>';
   }
-  html+=`<div class="editorTopline"><strong>✏️ Gönderilecek mesaj</strong><span class="counterPill">Doğrudan düzenleyin</span></div><div class="toolbar" id="inlineToolbar"><button class="tool" data-wrap="*|*" title="Kalın"><b>B</b></button><button class="tool" data-wrap="_|_" title="İtalik"><i>I</i></button><button class="tool" data-wrap="~|~" title="Üstü çizili"><s>S</s></button><button class="tool wide" data-prefix="- " title="Madde">• Liste</button><button class="tool wide" data-prefix="1. " title="Numara">1. Liste</button><button class="tool" data-prefix="> " title="Alıntı">❯</button></div><textarea id="inlineComposerText" class="composeTextarea" aria-label="Gönderilecek WhatsApp mesajını düzenleyin" spellcheck="true"></textarea><div class="editorBottomline"><span id="inlineDraftState">Düzenleme taslakta saklanır</span><span id="charCount"></span></div><div class="editorFooterRow"><button id="resetInlineBtn" class="btn secondary small">↻ Şablondan yeniden oluştur</button></div><details class="detailsCompact"><summary>👁 WhatsApp önizlemesini göster</summary><div id="completePreview" class="previewBox waPreview" style="margin-bottom:11px"></div></details><div class="row wrap" style="margin-top:10px"><button class="btn ghost small" id="finishFromComplete">Çalışmayı Bitir</button></div>`;
+  html+=`<div class="editorTopline"><strong>✏️ Gönderilecek mesaj</strong><span class="counterPill">Doğrudan düzenleyin</span></div><div class="toolbar" id="inlineToolbar"><button class="tool" data-wrap="*|*" title="Kalın"><b>B</b></button><button class="tool" data-wrap="_|_" title="İtalik"><i>I</i></button><button class="tool" data-wrap="~|~" title="Üstü çizili"><s>S</s></button><button class="tool wide" data-prefix="- " title="Madde">• Liste</button><button class="tool wide" data-prefix="1. " title="Numara">1. Liste</button><button class="tool" data-prefix="> " title="Alıntı">❯</button></div><textarea id="inlineComposerText" class="composeTextarea" aria-label="Gönderilecek WhatsApp mesajını düzenleyin" spellcheck="true"></textarea><div class="editorBottomline"><span id="inlineDraftState">Düzenleme taslakta saklanır</span><span id="charCount"></span></div><div class="editorFooterRow"><button id="resetInlineBtn" class="btn secondary small">${b.templateId===BLANK_TEMPLATE.id?'↻ Mesajı temizle':'↻ Şablondan yeniden oluştur'}</button></div><details class="detailsCompact"><summary>👁 WhatsApp önizlemesini göster</summary><div id="completePreview" class="previewBox waPreview" style="margin-bottom:11px"></div></details><div class="row wrap" style="margin-top:10px"><button class="btn ghost small" id="finishFromComplete">Çalışmayı Bitir</button></div>`;
   $('#completeBody').innerHTML=html;
   $('#inlineComposerText').value=batchTextFor(s.id);
   $('#prevStudentBtn').disabled=b.index===0;$('#nextStudentBtn').disabled=b.index>=b.studentIds.length-1;$('#nextStudentBtn').textContent=s.phone.valid?'Sonraki →':'Atla →';$('#openWhatsappFromComplete').disabled=!s.phone.valid;$('#openWhatsappFromComplete').textContent=s.phone.valid?"WhatsApp’ta Aç":'Telefon yok';
@@ -625,7 +687,7 @@ function onFieldInput(el){const b=state.batch,s=currentBatchStudent(),k=el.datas
 function refreshCalculatedFields(){const b=state.batch,t=templateById(b?.templateId),s=currentBatchStudent();if(!b||!t||!s)return;const vals=b.values[s.id]||{};for(const f of fieldsFor(t)){if(f.type==='calculated'){vals[f.key]=calcFormula(f.formula,vals);const el=$(`#completeBody [data-field="${f.key}"]`);if(el)el.value=vals[f.key];rebaseManualForStudent(s.id)}if(f.key==='NET'&&b.autoNet[s.id]!==false){const el=$('#completeBody [data-field="NET"]');if(el)el.value=vals.NET??''}}}
 function updateInlineFromState(){const s=currentBatchStudent(),el=$('#inlineComposerText');if(s&&el){const start=el.selectionStart,end=el.selectionEnd;el.value=batchTextFor(s.id);el.setSelectionRange(Math.min(start,el.value.length),Math.min(end,el.value.length))}updateInlineMeta()}
 function refreshCompletePreview(){const el=$('#inlineComposerText'),p=$('#completePreview');if(el&&p)p.innerHTML=renderWhatsApp(el.value)}
-function resetCurrentTemplate(){const b=state.batch,t=templateById(b?.templateId),s=currentBatchStudent();if(!b||!t||!s)return;if(!confirm('Elle düzenlediğiniz metin şablona dönecek. Devam edilsin mi?'))return;const target=b.pinMessage?b.studentIds.filter(id=>!b.opened[id]||id===s.id):[s.id];for(const id of target){delete b.manualTexts[id];delete b.manualPatterns[id]}b.pinnedPattern='';if(b.pinMessage)b.pinMessage=false;renderComplete();scheduleDraftSave();}
+function resetCurrentTemplate(){const b=state.batch,t=templateById(b?.templateId),s=currentBatchStudent();if(!b||!t||!s)return;if(!confirm(b.templateId===BLANK_TEMPLATE.id?'Yazdığınız mesaj metni temizlensin mi?':'Elle düzenlediğiniz metin şablona dönecek. Devam edilsin mi?'))return;const target=b.pinMessage?b.studentIds.filter(id=>!b.opened[id]||id===s.id):[s.id];for(const id of target){delete b.manualTexts[id];delete b.manualPatterns[id]}b.pinnedPattern='';if(b.pinMessage)b.pinMessage=false;renderComplete();scheduleDraftSave();}
 function moveBatch(delta){const b=state.batch;if(!b)return;if(b.batchComplete)b.batchComplete=false;const ni=Math.max(0,Math.min(b.studentIds.length-1,b.index+delta));if(ni===b.index)return;b.index=ni;renderComplete();scheduleDraftSave();}
 async function openWhatsapp(){
   const b=state.batch,t=templateById(b?.templateId),s=currentBatchStudent();if(!b||!t||!s)return;
@@ -702,7 +764,7 @@ async function saveRemote(path,val){const localApply=()=>{mirrorRemote()};try{if
 async function deleteRemote(path){try{if(state.db)await state.db.ref(`${DB_ROOT}/${path}`).remove();mirrorRemote()}catch{mirrorRemote();toast('Firebase silme işlemi şu an tamamlanamadı.')}}
 
 function renderSettings(){$('#signatureText').value=state.settings.signatureText||SIGNATURE_DEFAULT;$('#signatureSwitch').classList.toggle('on',!!state.settings.signatureDefault);$('#favoriteLimitInput').value=favoriteLimit()}
-function openTab(tab){state.currentTab=tab;$$('.panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));$$('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='messages')renderMessages();if(tab==='settings')renderSettings();window.scrollTo({top:0,behavior:'smooth'})}
+function openTab(tab){state.currentTab=tab;$$('.panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));$$('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='messages')renderMessages();if(tab==='drafts')renderDraftManagement();if(tab==='settings')renderSettings();window.scrollTo({top:0,behavior:'smooth'})}
 function openModal(id){$('#'+id).classList.add('open');document.body.style.overflow='hidden'}
 function closeModal(id){$('#'+id).classList.remove('open');if(!$('.modal.open'))document.body.style.overflow=''}
 
@@ -715,11 +777,12 @@ function bindEvents(){
   $('#studentList').addEventListener('click',e=>{const row=e.target.closest('[data-student]');if(!row)return;const id=row.dataset.student;state.selected.has(id)?state.selected.delete(id):state.selected.add(id);renderStudents()});
   $('#selectAllBtn').addEventListener('click',()=>{visibleStudents().forEach(s=>state.selected.add(s.id));renderStudents()});$('#clearSelectionBtn').addEventListener('click',()=>{state.selected.clear();renderStudents()});
   $('#goMessagesBtn').addEventListener('click',()=>openTab('messages'));
+  $('#goBlankBtn').addEventListener('click',()=>openComplete(BLANK_TEMPLATE.id));$('#goBlankFromMessagesBtn').addEventListener('click',()=>openComplete(BLANK_TEMPLATE.id));
   $('#messageSearch').addEventListener('input',e=>{state.messageSearch=e.target.value;renderMessages()});
   $('#categoryChips').addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(!b)return;state.category=b.dataset.category;renderMessages()});
   ['messageGrid','favoritesList'].forEach(id=>$('#'+id).addEventListener('click',async e=>{e.stopPropagation();const fav=e.target.closest('[data-fav]');if(fav)return toggleFavorite(fav.dataset.fav);const up=e.target.closest('[data-fav-up]');if(up)return moveFavorite(+up.dataset.favUp,-1);const down=e.target.closest('[data-fav-down]');if(down)return moveFavorite(+down.dataset.favDown,1);const edit=e.target.closest('[data-edit]');if(edit)return openTemplateEditor(edit.dataset.edit);const copy=e.target.closest('[data-copy]');if(copy)return openTemplateEditor(copy.dataset.copy,true);const del=e.target.closest('[data-delete]');if(del)return deleteGeneratedMessage(del.dataset.delete);const res=e.target.closest('[data-restore]');if(res)return restoreTemplate(res.dataset.restore);const use=e.target.closest('[data-use]');if(use)return useTemplate(use.dataset.use);const card=e.target.closest('[data-template]');if(card)return openComplete(card.dataset.template)}));
-  $$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
-  $('#completeBackBtn').addEventListener('click',()=>{closeModal('completeModal');openTab('messages')});$('#templateBackBtn').addEventListener('click',()=>closeModal('templateModal'));
+  $$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m&&m.id!=='completeModal')closeModal(m.id)}));
+  $('#completeBackBtn').addEventListener('click',()=>{closeModal('completeModal');openTab('drafts')});$('#templateBackBtn').addEventListener('click',()=>closeModal('templateModal'));
   $('#prevStudentBtn').addEventListener('click',()=>moveBatch(-1));$('#nextStudentBtn').addEventListener('click',()=>moveBatch(1));$('#openWhatsappFromComplete').addEventListener('click',openWhatsapp);
   $('#undoBulkBtn').addEventListener('click',undoBulkEdit);
   $('#copyInlineBtn').addEventListener('click',async()=>{const value=$('#inlineComposerText')?.value||'';if(!value)return toast('Kopyalanacak mesaj yok.');try{await navigator.clipboard.writeText(value)}catch{const el=$('#inlineComposerText');el.select();document.execCommand('copy')}toast('Mesaj kopyalandı.')});
@@ -729,6 +792,16 @@ function bindEvents(){
   $('#importChatgptMessageBtn').addEventListener('click',importChatGPTMessage);$('#clearSpecialBtn').addEventListener('click',()=>{$('#specialRequestText').value='';$('#generatedPrompt').value='';$('#chatgptResponseText').value='';toast('Özel İstek alanları temizlendi.')});
   $('#signatureSwitch').addEventListener('click',()=>{$('#signatureSwitch').classList.toggle('on')});$('#saveSignatureBtn').addEventListener('click',async()=>{state.settings.signatureDefault=$('#signatureSwitch').classList.contains('on');state.settings.signatureText=$('#signatureText').value.trim()||SIGNATURE_DEFAULT;await saveRemote('settings',state.settings);toast('İmza ayarları kaydedildi.')});
   $('#saveFavoriteLimitBtn').addEventListener('click',async()=>{let n=parseInt($('#favoriteLimitInput').value,10);if(!Number.isFinite(n))n=APP_CONFIG.favoriteDefault;n=Math.max(APP_CONFIG.favoriteMin,Math.min(APP_CONFIG.favoriteMax,n));if(n<state.favorites.length)return toast(`Şu anda ${state.favorites.length} favoriniz var. Sınır bundan düşük olamaz.`);state.settings.favoriteLimit=n;$('#favoriteLimitInput').value=n;await saveRemote('settings',state.settings);renderMessages();toast(`Favori sınırı ${n} olarak kaydedildi.`)});
+  $('#draftManagement').addEventListener('input',e=>{if(e.target.id==='draftStudentSearch'){draftStudentSearch=e.target.value;renderDraftAvailable()}});
+  $('#draftManagement').addEventListener('click',async e=>{
+    const el=e.target.closest('button');if(!el)return;
+    if(el.hasAttribute('data-draft-go-students'))return openTab('students');
+    if(el.hasAttribute('data-draft-resume')){const d=state.batch||state.draftCandidate;if(d)openComplete(d.templateId,d);return}
+    if(el.hasAttribute('data-draft-add-selected'))return addStudentsToDraft([...state.selected]);
+    if(el.hasAttribute('data-draft-add'))return addStudentsToDraft([el.dataset.draftAdd]);
+    if(el.hasAttribute('data-draft-remove'))return removeStudentFromDraft(el.dataset.draftRemove);
+    if(el.hasAttribute('data-draft-clear')&&confirm('Bütün çalışma taslağı ve kayıtlı mesaj düzenlemeleri silinsin mi?')){await clearDraft();closeModal('completeModal');toast('Taslak temizlendi.')}
+  });
   $('#clearDraftSettingsBtn').addEventListener('click',async()=>{if(confirm('Saklanan yarım çalışma taslağı temizlensin mi?')){await clearDraft();toast('Taslak temizlendi.')}});
   $('#deleteGeneratedBtn').addEventListener('click',async()=>{if(!confirm('Özel İstek bölümünden eklenen TÜM ChatGPT mesajları silinsin mi? Bu işlem geri alınamaz.'))return;state.generated={};state.favorites=state.favorites.filter(id=>!id.startsWith('generated_'));await deleteRemote('generatedMessages');await saveRemote('favorites',state.favorites);renderMessages();toast('ChatGPT ile eklenen mesajlar silindi.')});
   $('#hideAllMessagesBtn').addEventListener('click',async()=>{if(!confirm('Tüm hazır mesajlar görünümden kaldırılsın mı? Veriler silinmeyecek.'))return;state.settings.hideAllMessages=true;await saveRemote('settings',state.settings);renderMessages();toast('Hazır mesajlar gizlendi.')});
@@ -743,7 +816,7 @@ async function init(){
   $('#categoryDatalist').innerHTML=CATEGORIES.map(c=>`<option value="${esc(c)}"></option>`).join('');
   const emergency=localStorage.getItem('fm_emergencyDraft');if(emergency&&!await kvGet('activeBatch')){try{await kvSet('activeBatch',JSON.parse(emergency))}catch{}}localStorage.removeItem('fm_emergencyDraft');
   const mirror=getLocalMirror();if(mirror){state.generated=mirror.generated||{};state.overrides=mirror.overrides||{};state.favorites=mirror.favorites||[];state.settings={...state.settings,...(mirror.settings||{})}}
-  state.settings.favoriteLimit=favoriteLimit();bindEvents();renderSettings();renderMessages();renderStudents();initFirebase();loadStudents();
+  state.settings.favoriteLimit=favoriteLimit();bindEvents();renderSettings();renderMessages();renderStudents();renderDraftManagement();initFirebase();loadStudents();
 }
 init();
 })();
