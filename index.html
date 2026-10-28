@@ -91,6 +91,18 @@
     .draftAddResults{max-height:290px;overflow:auto;margin-top:8px}.draftAddResults .draftStudent{margin-top:6px}
     .draftActions{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}.draftActions .btn{flex:1 1 140px}
     @media (max-width:375px){.draftStudent{flex-wrap:wrap}.draftStudent .btn{margin-left:auto}}
+    .draftCard{border:1px solid var(--line);border-radius:15px;background:var(--card2);padding:12px;margin:10px 0}
+    .draftCard.chosen{border-color:var(--accent);background:var(--soft)}
+    .draftCardTitle{font-weight:850;overflow-wrap:anywhere}
+    .draftStatus{font-size:11px;font-weight:800;border:1px solid var(--line);border-radius:999px;padding:4px 8px;white-space:nowrap}
+    .draftCard .draftActions{margin-bottom:0}.draftCard .draftActions .btn{flex:1 1 105px}
+    .draftManagementTools{border:1px solid var(--line);background:var(--card2);padding:12px;border-radius:14px;margin-top:12px}
+    .draftManagementTools .field{margin-bottom:8px}
+    .draftCloudInfo{font-size:12px;color:var(--muted);margin:9px 0}
+    .draftActionModalText{font-size:14px;color:var(--muted);margin:0 0 12px}
+    .draftFinishActions{display:grid;gap:9px}
+    .draftFinishActions .btn{width:100%}
+    
   </style>
 </head>
 <body>
@@ -104,16 +116,16 @@
     </div>
     <div class="statusbar">
       <span class="badge" id="sheetStatus">Öğrenciler: bağlanıyor…</span>
-      <span class="badge" id="firebaseStatus">Firebase: bağlanıyor…</span>
+      <span class="badge" id="firebaseStatus">Firebase: bağlanıyor…</span><span class="badge" id="draftSyncStatus">Taslaklar: yerel kayıt</span>
       <span class="badge" id="selectedStatus">0 öğrenci seçili</span>
     </div>
   </header>
 
   <main>
     <div id="recoveryBox" class="recovery">
-      <strong>Yarım kalan çalışma bulundu.</strong>
-      <div class="hint" id="recoveryText">Önceki çalışmanız telefonda güvenli şekilde saklandı.</div>
-      <div class="row"><button class="btn small" id="resumeDraftBtn">Devam Et</button><button class="btn secondary small" id="discardDraftBtn">Taslağı Temizle</button></div>
+      <strong>Kayıtlı çalışma taslaklarınız var.</strong>
+      <div class="hint" id="recoveryText">Taslak Yönetimi bölümünden istediğiniz çalışmaya devam edebilirsiniz.</div>
+      <div class="row"><button class="btn small" id="resumeDraftBtn">Taslakları Gör</button><button class="btn secondary small" id="discardDraftBtn">Bildirimi Gizle</button></div>
     </div>
 
     <section id="panel-students" class="panel active">
@@ -148,8 +160,9 @@
 
     <section id="panel-drafts" class="panel">
       <div class="section">
-        <div class="row"><h2 class="sectionTitle">📝 Taslak Yönetimi</h2><div class="spacer"></div><span id="draftCount" class="counterPill">0 öğrenci</span></div>
-        <p class="hint">Yarım kalan çalışmanın öğrenci listesini buradan görebilir, öğrenci ekleyebilir veya çıkarabilirsiniz. Mesaj düzenlemeleri ve ilerleme korunur.</p>
+        <div class="row"><h2 class="sectionTitle">📝 Taslak Yönetimi</h2><div class="spacer"></div><span id="draftCount" class="counterPill">0 taslak</span></div>
+        <p class="hint">Birden fazla çalışma oluşturun, taslakları isimlendirin, bekletin, tamamlayın veya silin. Öğrenci listeleri yalnızca istediğinizde gösterilir.</p>
+        <p class="draftCloudInfo">Firebase bağlıysa taslaklar aynı veritabanına bağlanan cihazlar arasında eşitlenir. Çevrimdışıyken yerel kopyanız saklanır.</p>
         <div id="draftManagement"></div>
       </div>
     </section>
@@ -192,7 +205,7 @@ MESAJ:
         <div class="settingRow"><div class="grow"><strong>Favori mesaj sınırı</strong><div class="hint">Varsayılan 15. Mevcut favori sayısından daha düşük bir değer seçilemez.</div></div><div style="width:92px"><input id="favoriteLimitInput" type="number" min="1" max="100" value="15"></div></div>
         <button id="saveFavoriteLimitBtn" class="btn secondary" style="margin-bottom:8px">Favori Sınırını Kaydet</button>
         <div class="settingRow"><div class="grow"><strong>Öğrenci listesini yenile</strong><div class="hint">Google Sheet'teki Ogrenciler sayfasını yeniden kontrol eder.</div></div><button id="settingsRefreshBtn" class="btn secondary small">↻ Yenile</button></div>
-        <div class="settingRow"><div class="grow"><strong>Taslağı temizle</strong><div class="hint">Yarım kalan toplu mesaj çalışmasını telefondan kaldırır.</div></div><button id="clearDraftSettingsBtn" class="btn secondary small">Temizle</button></div>
+        <div class="settingRow"><div class="grow"><strong>Firebase taslaklarını temizle</strong><div class="hint">Bütün cihazların ortak kullandığı taslakların tamamını Firebase’den kalıcı olarak siler. Hazır mesajlar, favoriler ve öğrenci listesi korunur. Tek taslak silmek için Taslak Yönetimi’ni kullanın.</div></div><button id="clearDraftSettingsBtn" class="btn danger small">Tümünü Sil</button></div>
       </div>
       <div class="section dangerZone">
         <h3>Gelişmiş Mesaj Yönetimi</h3>
@@ -202,7 +215,7 @@ MESAJ:
         <div class="settingRow"><div class="grow"><strong>Tüm mesajları tekrar göster</strong><div class="hint">Gizleme işlemini geri alır.</div></div><button id="showAllMessagesBtn" class="btn secondary small">Göster</button></div>
         <div class="settingRow"><div class="grow"><strong>Standart 200 mesajı geri yükle</strong><div class="hint">Standart mesajlarda yaptığınız kalıcı düzenlemeleri fabrika haline döndürür.</div></div><button id="restoreSystemBtn" class="btn secondary small">Geri Yükle</button></div>
       </div>
-      <div class="notice errorNotice">Not: Firebase Realtime Database kurallarınız şu anda herkese açık okuma/yazmaya izin veriyor. İsteğiniz doğrultusunda uygulama bu kuralları değiştirmez.</div>
+      <div class="notice errorNotice"><strong>Veri güvenliği:</strong> Bu HTML, Firebase Authentication kullanmıyor. Veritabanı kurallarınız herkese açıksa, taslak içerikleri de yetkisiz erişime ve değiştirilmeye açıktır. Taslak paylaşımını güvenli kullanmak için Firebase Authentication ve kullanıcıya özel veritabanı kuralları yapılandırılmalıdır. Bu HTML tek başına Firebase sunucu kurallarını değiştiremez.</div>
       <div class="version">Sürüm <strong id="versionText"></strong></div>
     </section>
   </main>
@@ -221,6 +234,13 @@ MESAJ:
   <div class="sheetHeader"><button class="backBtn" id="completeBackBtn">← Geri</button><div><strong id="completeTitle">Mesajı Tamamla</strong><div class="progress" id="batchProgress"></div></div><button class="closeBtn" data-close="completeModal">✕</button></div>
   <div class="sheetBody" id="completeBody"></div>
   <div class="sheetFooter sendFooter" id="completeFooter"><button class="btn" id="openWhatsappFromComplete">WhatsApp’ta Aç</button><div class="sendSecondaryRow"><button class="btn secondary" id="prevStudentBtn">← Önceki</button><button class="btn secondary" id="copyInlineBtn">📋 Kopyala</button><button class="btn secondary" id="nextStudentBtn">Sonraki →</button></div></div>
+</div></div>
+
+<div id="finishModal" class="modal" role="dialog" aria-modal="true"><div class="sheet">
+  <div class="sheetHeader"><strong>Çalışmayı Sonlandır</strong><button class="closeBtn" data-close="finishModal">✕</button></div>
+  <div class="sheetBody"><p class="draftActionModalText">Taslağın nasıl saklanmasını istiyorsunuz? WhatsApp bağlantısını açmak mesajın gönderildiğini doğrulamaz.</p>
+    <div class="draftFinishActions"><button id="finishPauseBtn" class="btn secondary">⏸ Taslağı Beklet</button><button id="finishArchiveBtn" class="btn">✓ Tamamlandı Olarak Sakla</button><button id="finishDeleteBtn" class="btn danger">🗑 Taslağı Sil</button></div>
+  </div>
 </div></div>
 
 <div id="templateModal" class="modal" role="dialog" aria-modal="true"><div class="sheet">
@@ -246,7 +266,7 @@ MESAJ:
 <script>
 (()=>{
 'use strict';
-const APP_CONFIG={version:'1.0.3',developer:'Ferhat Karagöz',favoriteDefault:15,favoriteMin:1,favoriteMax:100,systemMessageCount:200,updatedAt:'09.10.2026'};
+const APP_CONFIG={version:'1.0.4',developer:'Ferhat Karagöz',favoriteDefault:15,favoriteMin:1,favoriteMax:100,systemMessageCount:200,updatedAt:'29.10.2026'};
 const SHEET_ID='1OeDI5rQvWXP6s5OhgRFrh1dThnBMmA9mrCjgYuk1Qtw';
 const SHEET_NAME='Ogrenciler';
 const DB_ROOT='hazirmesajservice';
@@ -469,8 +489,8 @@ const FIELD_META={
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const state={students:[],selected:new Set(),classFilters:new Set(),studentSearch:'',messageSearch:'',category:'Tümü',generated:{},overrides:{},favorites:[],settings:{signatureDefault:false,signatureText:SIGNATURE_DEFAULT,hideAllMessages:false,favoriteLimit:APP_CONFIG.favoriteDefault,recentMessages:[]},db:null,batch:null,editing:null,editorFields:[],draftCandidate:null,currentTab:'students'};
-let toastTimer=null,draftTimer=null,bulkEditTimer=null,undoToastTimer=null,draftStudentSearch='';
+const state={students:[],selected:new Set(),classFilters:new Set(),studentSearch:'',messageSearch:'',category:'Tümü',generated:{},overrides:{},favorites:[],settings:{signatureDefault:false,signatureText:SIGNATURE_DEFAULT,hideAllMessages:false,favoriteLimit:APP_CONFIG.favoriteDefault,recentMessages:[]},db:null,batch:null,editing:null,editorFields:[],drafts:{},remoteDrafts:{},draftPending:{},draftSyncReady:false,draftResetToken:localStorage.getItem('fm_draftResetToken')||'',activeDraftId:null,managedDraftId:null,draftMembersExpanded:false,draftClassFilter:'',currentTab:'students'};
+let toastTimer=null,draftTimer=null,bulkEditTimer=null,undoToastTimer=null,draftStudentSearch='',draftOperationSeq=0;const draftWritesInFlight=new Set();const draftClientId=localStorage.getItem('fm_draftClientId')||('device_'+Math.random().toString(36).slice(2)+Date.now().toString(36));localStorage.setItem('fm_draftClientId',draftClientId);
 
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2600)}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -514,12 +534,149 @@ async function kvSet(k,v){try{const db=await idbOpen();await new Promise((res,re
 async function kvGet(k){try{const db=await idbOpen();return await new Promise((res,rej)=>{const r=db.transaction(IDB_STORE).objectStore(IDB_STORE).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch{try{return JSON.parse(localStorage.getItem('fm_'+k)||'null')}catch{return null}}}
 async function kvDel(k){try{const db=await idbOpen();await new Promise((res,rej)=>{const tx=db.transaction(IDB_STORE,'readwrite');tx.objectStore(IDB_STORE).delete(k);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch{localStorage.removeItem('fm_'+k)}}
 
+// Çoklu taslak veri modeli: her taslak ayrı Firebase düğümünde, yerel yedek ve bekleyen işlem kuyruğuyla tutulur.
+function newDraftId(){return 'draft_'+(globalThis.crypto?.randomUUID?.()||`${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`).replace(/[^a-zA-Z0-9_-]/g,'_')}
+function normalizeDraft(raw,id){if(!raw||typeof raw!=='object'||!Array.isArray(raw.studentIds)||!raw.templateId)return null;return {...raw,id,status:['active','paused','completed'].includes(raw.status)?raw.status:'paused',title:String(raw.title||templateById(raw.templateId)?.title||'İsimsiz çalışma').slice(0,100),studentIds:raw.studentIds.filter(x=>typeof x==='string'),revision:Number(raw.revision)||0,updatedAt:Number(raw.updatedAt||raw.savedAt||raw.createdAt)||Date.now()}}
+function reviveBatch(d){return {...d,values:d.values||{},manualTexts:d.manualTexts||{},manualPatterns:d.manualPatterns||{},autoNet:d.autoNet||{},opened:d.opened||{},sharedKeys:new Set(d.sharedKeys||[]),pinMessage:!!d.pinMessage,pinnedPattern:d.pinnedPattern||'',signatureText:d.signatureText??state.settings.signatureText??SIGNATURE_DEFAULT,awaitingReturn:false,index:Math.max(0,Math.min(Number(d.index)||0,Math.max(0,d.studentIds.length-1)))}}
 function snapshotBatch(){if(!state.batch)return null;const {bulkEditBase,lastBulkEdit,...rest}=state.batch;return {...rest,sharedKeys:[...state.batch.sharedKeys],savedAt:Date.now()}}
-function scheduleDraftSave(){clearTimeout(draftTimer);draftTimer=setTimeout(()=>saveDraft(),220);renderDraftManagement()}
-async function saveDraft(){if(state.batch)await kvSet('activeBatch',snapshotBatch());renderDraftManagement()}
-async function clearDraft(){state.batch=null;state.draftCandidate=null;clearTimeout(draftTimer);clearTimeout(bulkEditTimer);$('#undoToast')?.classList.remove('show');localStorage.removeItem('fm_emergencyDraft');await kvDel('activeBatch');$('#recoveryBox').classList.remove('show');renderDraftManagement()}
-async function inspectDraft(){if(state.batch||!state.students.length)return;const d=await kvGet('activeBatch');if(!d)return;if(!d.savedAt||Date.now()-d.savedAt>7*24*3600*1000){await kvDel('activeBatch');renderDraftManagement();return}if(d.awaitingReturn){d.awaitingReturn=false;state.draftCandidate=null;$('#recoveryBox').classList.remove('show');openComplete(d.templateId,d);toast(d.batchComplete?'Toplu gönderim özeti hazır.':'Sıradaki öğrenci hazır.');return}state.draftCandidate=d;const t=templateById(d.templateId);$('#recoveryText').textContent=`${t?.title||'Mesaj'} · ${d.studentIds?.length||0} öğrenci · ${new Date(d.savedAt).toLocaleString('tr-TR')}`;$('#recoveryBox').classList.add('show');renderDraftManagement()}
-
+function draftCounts(){return Object.keys(state.drafts).length}
+function refreshDraftStatus(){const pending=Object.keys(state.draftPending).length;const el=$('#draftSyncStatus');if(!el)return;el.textContent=state.draftSyncReady?(pending?`Taslaklar: ${pending} eşitleniyor`:'Taslaklar: Firebase eşitlendi'):`Taslaklar: yerel kayıt${pending?' · '+pending+' bekliyor':''}`;el.className='badge '+(state.draftSyncReady&&!pending?'ok':'warn')}
+async function cacheDrafts(){await kvSet('draftsV2',state.drafts);await kvSet('draftOpsV2',state.draftPending);refreshDraftStatus()}
+function rememberCurrentBatch(){if(!state.batch||!state.activeDraftId)return;const d=snapshotBatch();d.updatedAt=Date.now();d.updatedBy=draftClientId;d.resetToken=state.draftResetToken;state.drafts[d.id]=d;state.managedDraftId=state.managedDraftId||d.id}
+function queueDraftOperation(id,type,record){
+  const old=state.draftPending[id],baseRevision=old?old.baseRevision:(record?.revision??state.remoteDrafts[id]?.revision??0);
+  if(type==='save'&&record)record.resetToken=state.draftResetToken;
+  state.draftPending[id]={type,record:type==='save'?structuredClone(record):null,resetToken:state.draftResetToken,baseRevision,seq:++draftOperationSeq};refreshDraftStatus();
+}
+function scheduleDraftSave(){if(!state.batch)return;rememberCurrentBatch();clearTimeout(draftTimer);draftTimer=setTimeout(()=>{void saveDraft()},450);renderDraftManagement()}
+async function saveDraft(){clearTimeout(draftTimer);if(state.batch){rememberCurrentBatch();const id=state.activeDraftId;queueDraftOperation(id,'save',state.drafts[id]);await cacheDrafts();void processDraftOperations(id)}else await cacheDrafts();renderDraftManagement()}
+async function saveDraftRecord(record){const d=normalizeDraft(record,record.id);if(!d)return;d.updatedAt=Date.now();d.updatedBy=draftClientId;state.drafts[d.id]=d;if(state.activeDraftId===d.id&&state.batch){state.batch.status=d.status;state.batch.title=d.title}queueDraftOperation(d.id,'save',d);await cacheDrafts();void processDraftOperations(d.id);renderDraftManagement()}
+async function deleteDraft(id){if(!id||!state.drafts[id])return;clearTimeout(draftTimer);if(id===state.activeDraftId){state.batch=null;state.activeDraftId=null;closeModal('completeModal');closeModal('finishModal')}const record=state.drafts[id];delete state.drafts[id];queueDraftOperation(id,'delete',record);if(state.managedDraftId===id){state.managedDraftId=null;state.draftMembersExpanded=false}await cacheDrafts();void processDraftOperations(id);inspectDraft();renderDraftManagement()}
+async function clearDraft(){return deleteDraft(state.managedDraftId||state.activeDraftId)}
+function inspectDraft(){const n=draftCounts();const box=$('#recoveryBox');if(!box)return;box.classList.toggle('show',n>0&&!box.dataset.dismissed);$('#recoveryText').textContent=n?`${n} kayıtlı çalışma bulunuyor. Taslak Yönetimi bölümünden istediğinizi açabilirsiniz.`:'';renderDraftManagement()}
+function selectManagedDraft(id){if(!state.drafts[id])return;state.managedDraftId=id;state.draftMembersExpanded=false;draftStudentSearch='';state.draftClassFilter='';renderDraftManagement()}
+// Sunucudaki toplu temizleme işareti her cihazda eski çevrimdışı kayıtların tekrar yüklenmesini önler.
+function applyDraftReset(token){
+  if(!token||token===state.draftResetToken)return;
+  clearTimeout(draftTimer);clearTimeout(bulkEditTimer);
+  state.draftResetToken=token;localStorage.setItem('fm_draftResetToken',token);
+  state.drafts={};state.remoteDrafts={};state.draftPending={};
+  state.batch=null;state.activeDraftId=null;state.managedDraftId=null;
+  state.draftMembersExpanded=false;state.draftClassFilter='';draftStudentSearch='';
+  closeModal('completeModal');closeModal('finishModal');
+  localStorage.removeItem('fm_emergencyDraft');void kvDel('activeBatch');
+  void cacheDrafts();inspectDraft();
+  toast('Firebase taslakları temizlendi; bu cihazdaki eski taslaklar da kaldırıldı.');
+}
+// Sadece taslak düğümü sıfırlanır; mesajlar, favoriler ve uygulamanın diğer kayıtları etkilenmez.
+async function clearAllFirebaseDrafts(){
+  const btn=$('#clearDraftSettingsBtn');
+  if(!state.db||!state.draftSyncReady)return toast('Firebase taslak bağlantısı hazır değil. Silme işlemi başlatılmadı.');
+  if(btn?.disabled)return;
+  const count=draftCounts();
+  if(!confirm(`Firebase üzerindeki TÜM taslaklar (${count} görünür kayıt) ve öğrenciye özel mesaj düzenlemeleri bütün cihazlar için kalıcı olarak silinecek.\n\nHazır mesajlar, favoriler ve öğrenci verileri silinmeyecek. Devam edilsin mi?`))return;
+  const verify=prompt('İşlemi doğrulamak için büyük harflerle SİL yazın:');
+  if(verify!=='SİL')return toast('Firebase taslakları silinmedi.');
+  btn.disabled=true;btn.textContent='Siliniyor…';
+  try{
+    const online=await state.db.ref('.info/connected').get();
+    if(!online.val())throw new Error('Firebase çevrimdışı.');
+    const token=newDraftId();
+    await state.db.ref(`${DB_ROOT}/draftsV2`).set({_reset:{token,at:firebase.database.ServerValue.TIMESTAMP,by:draftClientId}});
+    // Dinleyici eşzamanlı çalışsa da çağrıdan sonra yerel önbelleğin temiz olmasını garanti et.
+    applyDraftReset(token);
+    await cacheDrafts();
+    renderDraftManagement();
+    toast('Firebase taslaklarının tamamı temizlendi.');
+  }catch(err){toast(`Firebase taslakları silinemedi: ${err?.message||'Bağlantı veya yetki hatası'}`)}
+  finally{btn.disabled=false;btn.textContent='Tümünü Sil'}
+}
+async function pauseCurrentDraft(){if(!state.batch)return;state.batch.status='paused';await saveDraft();state.batch=null;state.activeDraftId=null;closeModal('completeModal');closeModal('finishModal');openTab('drafts');toast('Taslak bekletiliyor; istediğinizde yeniden açabilirsiniz.')}
+async function completeCurrentDraft(){if(!state.batch)return;state.batch.status='completed';await saveDraft();state.batch=null;state.activeDraftId=null;closeModal('completeModal');closeModal('finishModal');openTab('drafts');toast('Çalışma tamamlandı olarak saklandı. İsterseniz silebilirsiniz.')}
+async function finishBatch(){if(!state.batch)return;openModal('finishModal')}
+async function processDraftOperations(id){
+  if(!state.db||!state.draftSyncReady||draftWritesInFlight.has(id))return;
+  draftWritesInFlight.add(id);
+  try{
+    while(state.draftPending[id]&&state.db&&state.draftSyncReady){
+      const op=state.draftPending[id];
+      if((op.resetToken||'')!==state.draftResetToken){delete state.draftPending[id];await cacheDrafts();break}
+      let result;
+      try{
+        result=await state.db.ref(`${DB_ROOT}/draftsV2/${id}`).transaction(current=>{
+          const currentRev=Number(current?.revision)||0;
+          // Farklı cihazda daha yeni kayıt varsa hiçbir veriyi sessizce ezme.
+          if(currentRev!==op.baseRevision)return;
+          return op.type==='delete'?null:{...op.record,revision:currentRev+1};
+        },undefined,false);
+      }catch(err){setFirebaseStatus('Firebase: taslak yazılamadı','warn');break}
+      // Toplu temizleme sırasında başlamış, artık geçersiz bir işlemi ekrana geri yazma.
+      if((op.resetToken||'')!==state.draftResetToken)break;
+      if(!result.committed){
+        const remote=normalizeDraft(result.snapshot?.val(),id);
+        if(remote)state.remoteDrafts[id]=remote;else delete state.remoteDrafts[id];
+        if(op.type==='save'){
+          const newest=state.draftPending[id]?.record||op.record;
+          const copyId=newDraftId(),copy={...newest,id:copyId,title:(newest.title||'Taslak').slice(0,76)+' (Çakışma kopyası)',revision:0,createdAt:Date.now(),updatedAt:Date.now()};
+          state.drafts[copyId]=copy;
+          if(state.activeDraftId===id){state.activeDraftId=copyId;state.batch=reviveBatch(copy);state.managedDraftId=copyId}
+          if(remote)state.drafts[id]=remote;else delete state.drafts[id];
+          queueDraftOperation(copyId,'save',copy);void processDraftOperations(copyId);
+          toast('Başka cihazdaki değişiklik korundu. Sizin düzenlemeniz ayrı bir çakışma kopyasına kaydedildi.');
+        }else{if(remote)state.drafts[id]=remote;toast('Taslak başka cihazda değişmiş. Silinmedi; yeniden inceleyin.')}
+        delete state.draftPending[id];await cacheDrafts();break;
+      }
+      const current=normalizeDraft(result.snapshot?.val(),id);
+      if(current)state.remoteDrafts[id]=current;else delete state.remoteDrafts[id];
+      if(state.draftPending[id]?.seq===op.seq){delete state.draftPending[id];if(current){state.drafts[id]=current;if(state.activeDraftId===id&&state.batch)state.batch.revision=current.revision}else delete state.drafts[id]}
+      else if(state.draftPending[id])state.draftPending[id].baseRevision=current?.revision||0;
+      await cacheDrafts();
+    }
+  }finally{draftWritesInFlight.delete(id);refreshDraftStatus();inspectDraft()}
+}
+function handleRemoteDrafts(raw){
+  const serverToken=typeof raw?._reset?.token==='string'?raw._reset.token:'';
+  if(serverToken&&serverToken!==state.draftResetToken)applyDraftReset(serverToken);
+  const remote={};
+  for(const [id,v] of Object.entries(raw||{})){
+    if(!id.startsWith('draft_'))continue;
+    // Eski sürüme ait gecikmiş yazılar temizlemeden sonra taslakları yeniden oluşturamaz.
+    if(serverToken&&v?.resetToken!==serverToken)continue;
+    const d=normalizeDraft(v,id);if(d)remote[id]=d;
+  }
+  const previous=state.remoteDrafts;state.remoteDrafts=remote;state.draftSyncReady=true;
+  // Sunucudaki silmeler yerel eski önbellek üzerinden geri getirilmez. Bekleyen yerel değişiklikler korunur.
+  const merged={...remote};for(const [id,op] of Object.entries(state.draftPending)){if(op.type==='save')merged[id]=state.drafts[id]||op.record;else delete merged[id]}
+  const activeId=state.activeDraftId;
+  if(activeId&&state.batch&&!state.draftPending[activeId]){
+    if(merged[activeId]){
+      if(merged[activeId].revision!==state.batch.revision){
+        if($('#completeModal').classList.contains('open')){
+          // Kullanıcının yazmakta olduğu metni uzaktan gelen güncelleme ile aniden değiştirme.
+          merged[activeId]=state.drafts[activeId]||snapshotBatch();
+          if(previous[activeId]?.revision!==remote[activeId]?.revision)toast('Bu taslak başka cihazda güncellendi. Açık düzenlemeyi kaydederseniz farklılıklar kopya olarak korunur.');
+        }else state.batch=reviveBatch(merged[activeId]);
+      }
+    }else if($('#completeModal').classList.contains('open')){
+      const copyId=newDraftId(),copy={...snapshotBatch(),id:copyId,title:(state.batch.title||'Taslak')+' (Kurtarılan kopya)',revision:0};
+      state.activeDraftId=copyId;state.batch=reviveBatch(copy);state.managedDraftId=copyId;merged[copyId]=copy;queueDraftOperation(copyId,'save',copy);
+      toast('Taslak başka cihazdan silinmiş. Açık düzenleme yeni taslak olarak korundu.');
+    }else{state.batch=null;state.activeDraftId=null}
+  }
+  state.drafts=merged;void cacheDrafts();for(const id of Object.keys(state.draftPending))void processDraftOperations(id);inspectDraft();renderDraftManagement();
+}
+function initDraftSync(){if(!state.db)return;state.db.ref(`${DB_ROOT}/draftsV2`).on('value',snap=>handleRemoteDrafts(snap.val()),()=>{state.draftSyncReady=false;refreshDraftStatus();setFirebaseStatus('Firebase: taslak erişimi yok','warn')});state.db.ref('.info/connected').on('value',snap=>{if(snap.val())for(const id of Object.keys(state.draftPending))void processDraftOperations(id)})}
+async function loadLocalDrafts(){
+  const saved=await kvGet('draftsV2');for(const [id,v] of Object.entries(saved||{})){const d=normalizeDraft(v,id);if(d)state.drafts[id]=d}
+  state.draftPending=await kvGet('draftOpsV2')||{};
+  // v1.0.3 tek taslak verisinin geriye dönük, silmeden önce güvenli göçü.
+  const emergency=localStorage.getItem('fm_emergencyDraft');let legacy=await kvGet('activeBatch');if(!legacy&&emergency){try{const parsed=JSON.parse(emergency);if(!parsed.id||!state.drafts[parsed.id])legacy=parsed}catch{}}localStorage.removeItem('fm_emergencyDraft');
+  if(legacy?.studentIds?.length&&legacy.templateId){
+    const id=newDraftId(),d=normalizeDraft({...legacy,id,title:`${templateById(legacy.templateId)?.title||'Eski çalışma'} (Aktarıldı)`,status:'paused',revision:0},id);
+    if(d){state.drafts[id]=d;queueDraftOperation(id,'save',d);await cacheDrafts();await kvDel('activeBatch');localStorage.removeItem('fm_emergencyDraft')}
+  }
+  refreshDraftStatus();inspectDraft();
+}
 async function loadStudents(){setSheetStatus('Öğrenciler: güncelleniyor…','');try{const arr=await fetchSheetJSONP();if(!arr.length)throw new Error('Öğrenci bulunamadı');state.students=arr.sort(sortStudents);await kvSet('studentsCache',{savedAt:Date.now(),students:state.students});setSheetStatus(`Öğrenciler: ${arr.length} güncel`,'ok');renderStudents();await inspectDraft()}catch(err){const cache=await kvGet('studentsCache');if(cache?.students?.length){state.students=cache.students;setSheetStatus(`Çevrimdışı veri: ${cache.students.length}`,'warn');renderStudents();toast('Google Sheet okunamadı; son kayıtlı öğrenci listesi gösteriliyor.');await inspectDraft()}else{state.students=[];setSheetStatus('Öğrenciler alınamadı','warn');renderStudents();toast('Google Sheet okunamadı. Paylaşım erişimini kontrol edin.')}}}
 function setSheetStatus(text,cls){const e=$('#sheetStatus');e.textContent=text;e.className='badge '+cls}
 function fetchSheetJSONP(){return new Promise((resolve,reject)=>{const cb='__fmSheet_'+Date.now();let done=false;const s=document.createElement('script');const cleanup=()=>{delete window[cb];s.remove()};const timer=setTimeout(()=>{if(done)return;done=true;cleanup();reject(new Error('Zaman aşımı'))},12000);window[cb]=(resp)=>{if(done)return;done=true;clearTimeout(timer);cleanup();try{if(resp?.status==='error')throw new Error('Sheet hata');const table=resp?.table;if(!table)throw new Error('Tablo yok');const labels=(table.cols||[]).map(c=>normalizeHeader(c.label||c.id||''));const idx=(alts)=>labels.findIndex(x=>alts.includes(x));const iNo=idx(['NO','OGRNO','OGRENCINO','NUMARA']),iName=idx(['ADSOYAD','ADISOYADI','OGRENCI','OGRENCIADSOYAD']),iClass=idx(['SINIF','SUBE','SINIFSUBE']),iPhone=idx(['VELITEL','VELITELEFON','TELEFON','TEL','VELITELNO']);if(iName<0||iClass<0||iPhone<0)throw new Error('Gerekli başlıklar bulunamadı');const val=(r,i)=>{if(i<0)return '';const c=r.c?.[i];return c==null?'':String(c.f??c.v??'').trim()};const out=(table.rows||[]).map(r=>{const name=val(r,iName),cl=val(r,iClass),rawPhone=val(r,iPhone),no=val(r,iNo);const phone=normalizePhone(rawPhone);return {id:'s_'+hash(`${no}|${name}|${cl}|${phone.digits}`),no,name,class:cl,phone}}).filter(x=>x.name&&x.class);resolve(out)}catch(e){reject(e)}};s.onerror=()=>{if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('Bağlantı hatası'))};const tqx=encodeURIComponent(`out:json;responseHandler:${cb}`);s.src=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=${tqx}&sheet=${encodeURIComponent(SHEET_NAME)}&headers=1&_${Date.now()}`;document.head.appendChild(s)})}
@@ -545,30 +702,37 @@ async function toggleFavorite(id){let a=[...state.favorites];if(a.includes(id))a
 async function moveFavorite(i,delta){const a=[...state.favorites],j=i+delta;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];state.favorites=a;await saveRemote('favorites',a);renderMessages()}
 
 function own(obj,key){return Object.prototype.hasOwnProperty.call(obj||{},key)}
-// Tek taslak vardır: mevcut çalışmaya ekleme/çıkarma yapılır, başka çalışmayla sessizce değiştirilmez.
+// Taslak kartları ile ayrıntılı yönetim birbirinden bağımsızdır.
 function renderDraftAvailable(){
-  const target=$('#draftAddResults'),d=state.batch||state.draftCandidate;if(!target||!d)return;
+  const target=$('#draftAddResults'),d=state.drafts[state.managedDraftId];if(!target||!d)return;
   const used=new Set(d.studentIds||[]),q=draftStudentSearch.trim().toLocaleLowerCase('tr-TR');
-  const available=state.students.filter(s=>!used.has(s.id)&&(!q||`${s.name} ${s.class} ${s.no||''}`.toLocaleLowerCase('tr-TR').includes(q))).sort(sortStudents);
-  target.innerHTML=available.slice(0,20).map(s=>`<div class="draftStudent"><div class="draftStudentText"><strong>${esc(s.name)}</strong><span class="smeta">${esc(s.class)} · ${esc(s.phone.display||'Telefon yok')}</span></div><button class="btn secondary small" data-draft-add="${esc(s.id)}">+ Ekle</button></div>`).join('')||'<p class="hint">Eklenebilecek öğrenci bulunamadı.</p>';
-  if(available.length>20)target.insertAdjacentHTML('beforeend',`<p class="hint">${available.length} sonuç var. Diğer öğrenciler için arama alanını kullanın.</p>`);
+  const available=state.students.filter(s=>!used.has(s.id)&&(!state.draftClassFilter||s.class===state.draftClassFilter)&&(!q||`${s.name} ${s.class} ${s.no||''}`.toLocaleLowerCase('tr-TR').includes(q))).sort(sortStudents);
+  target.innerHTML=available.slice(0,20).map(s=>`<div class="draftStudent"><div class="draftStudentText"><strong>${esc(s.name)}</strong><span class="smeta">${esc(s.class)} · ${esc(s.phone.display||'Telefon yok')}</span></div><button class="btn secondary small" data-draft-add="${esc(s.id)}">+ Ekle</button></div>`).join('')||'<p class="hint">Bu filtreye uygun, eklenebilecek öğrenci bulunamadı.</p>';
+  if(available.length>20)target.insertAdjacentHTML('beforeend',`<p class="hint">${available.length} sonuç var. Diğer öğrenciler için arama alanını daraltın.</p>`);
 }
 function renderDraftManagement(){
-  const target=$('#draftManagement');if(!target)return;const d=state.batch||state.draftCandidate;
-  $('#draftCount').textContent=`${d?.studentIds?.length||0} öğrenci`;
-  if(!d){target.innerHTML='<div class="empty">Kayıtlı çalışma taslağı yok. Öğrencileri seçip boş mesaj ya da hazır mesaj oluşturduğunuzda burada görünür.</div><button type="button" class="btn secondary" data-draft-go-students>Öğrencilerden Başla</button>';return}
-  const ids=d.studentIds||[],done=ids.filter(id=>!!d.opened?.[id]).length,t=templateById(d.templateId);
-  const selectedNew=[...state.selected].filter(id=>!ids.includes(id)&&!!getStudent(id)).length;
-  target.innerHTML=`<div class="draftStats"><span class="badge">${esc(t?.title||'Mesaj')}</span><span class="badge ok">${done} WhatsApp bağlantısı açıldı</span><span class="badge">${ids.length-done} bekliyor</span></div>
-    <div class="draftActions"><button class="btn" data-draft-resume>▶ Taslağa Devam Et</button><button class="btn secondary" data-draft-add-selected ${selectedNew?'':'disabled'}>Seçilenleri Ekle (${selectedNew})</button></div>
-    <h3 style="margin-top:14px">Taslağa kayıtlı öğrenciler</h3><div id="draftMemberList">${ids.map((id,i)=>{const s=getStudent(id);return `<div class="draftStudent"><div class="draftStudentText"><strong>${i+1}. ${esc(s?.name||'Listede bulunamayan öğrenci')}</strong><span class="smeta">${esc(s?.class||'Öğrenci kaydı güncel listede yok')} · ${d.opened?.[id]?'✓ WhatsApp bağlantısı açıldı':'Henüz açılmadı'}</span></div><button class="btn secondary small" data-draft-remove="${esc(id)}" aria-label="Öğrenciyi taslaktan çıkar">Çıkar</button></div>`}).join('')}</div>
-    <div class="divider"></div><h3>+ Taslağa öğrenci ekle</h3><p class="hint">Aşağıdan öğrenci arayın veya Öğrenciler sekmesinde seçtiklerinizi topluca ekleyin.</p>
+  const target=$('#draftManagement');if(!target)return;
+  const drafts=Object.values(state.drafts).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  $('#draftCount').textContent=`${drafts.length} taslak`;
+  if(!drafts.length){target.innerHTML='<div class="empty">Kayıtlı taslak bulunamadı. Öğrencileri seçip yeni bir mesaj hazırladığınızda burada saklanır.</div><button class="btn secondary" data-draft-go-students>Öğrencilerden Başla</button>';return}
+  if(state.managedDraftId&&!state.drafts[state.managedDraftId])state.managedDraftId=null;
+  const statusName={active:'Devam ediyor',paused:'Bekletiliyor',completed:'Tamamlandı'};
+  let html=drafts.map(d=>{const count=d.studentIds?.length||0,done=(d.studentIds||[]).filter(id=>d.opened?.[id]).length,chosen=state.managedDraftId===d.id;
+    return `<div class="draftCard ${chosen?'chosen':''}"><div class="row wrap"><div class="draftCardTitle" style="flex:1">${esc(d.title)}</div><span class="draftStatus">${statusName[d.status]||'Bekletiliyor'}</span></div><p class="hint">${count} öğrenci · ${done} bağlantı açıldı · ${new Date(d.updatedAt||Date.now()).toLocaleString('tr-TR')}</p><div class="draftActions"><button class="btn small" data-draft-resume="${esc(d.id)}">${d.status==='completed'?'↻ Yeniden Aç':'▶ Devam Et'}</button><button class="btn secondary small" data-draft-manage="${esc(d.id)}">⚙ Yönet</button><button class="btn secondary small" data-draft-pause="${esc(d.id)}" ${d.status==='paused'?'disabled':''}>⏸ Beklet</button><button class="btn danger small" data-draft-clear="${esc(d.id)}">Sil</button></div></div>`}).join('');
+  const d=state.drafts[state.managedDraftId];
+  if(d){
+    const ids=d.studentIds||[],selectedNew=[...state.selected].filter(id=>!ids.includes(id)&&!!getStudent(id)).length;
+    const classes=[...new Set(state.students.map(s=>s.class).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr',{numeric:true}));
+    html+=`<div class="draftManagementTools"><div class="row wrap"><h3 style="margin:0;flex:1">${esc(d.title)}</h3><button class="btn secondary small" data-draft-rename="${esc(d.id)}">✏ Adlandır</button><button class="btn secondary small" data-draft-close-manage>✕ Kapat</button></div><div class="divider"></div><button class="btn secondary" style="width:100%" data-draft-members-toggle>${state.draftMembersExpanded?'▴ Kayıtlı öğrencileri gizle':'▾ Kayıtlı öğrencileri göster'} (${ids.length})</button>
+    ${state.draftMembersExpanded?`<div id="draftMemberList">${ids.map((id,i)=>{const s=getStudent(id);return `<div class="draftStudent"><div class="draftStudentText"><strong>${i+1}. ${esc(s?.name||'Listede bulunamayan öğrenci')}</strong><span class="smeta">${esc(s?.class||'Güncel listede yok')} · ${d.opened?.[id]?'✓ WhatsApp bağlantısı açıldı':'Henüz açılmadı'}</span></div><button class="btn secondary small" data-draft-remove="${esc(id)}">Çıkar</button></div>`}).join('')||'<p class="hint">Öğrenci bulunmuyor.</p>'}</div>`:''}
+    <div class="divider"></div><h3>+ Taslağa öğrenci ekle</h3><div class="field"><label for="draftStudentClass">Sınıf filtresi</label><select id="draftStudentClass"><option value="">Tüm sınıflar</option>${classes.map(c=>`<option value="${esc(c)}" ${state.draftClassFilter===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
     <div class="field"><input type="search" id="draftStudentSearch" value="${esc(draftStudentSearch)}" placeholder="Ad, sınıf veya öğrenci numarasıyla ara…" autocomplete="off" aria-label="Taslağa öğrenci ara"></div>
     <div id="draftAddResults" class="draftAddResults"></div>
-    <div class="divider"></div><button class="btn danger small" data-draft-clear>🗑 Taslağı Tamamen Sil</button>`;
-  renderDraftAvailable();
+    <div class="draftActions"><button class="btn secondary" data-draft-add-selected ${selectedNew?'':'disabled'}>Seçilen ${selectedNew} Öğrenciyi Ekle</button></div></div>`;
+  }
+  target.innerHTML=html;renderDraftAvailable();
 }
-function activateDraft(){const d=state.batch||state.draftCandidate;if(!d)return false;if(state.batch)return true;return startBatch(d.templateId,d)}
+function activateDraft(){const id=state.managedDraftId||state.activeDraftId;const d=state.drafts[id];if(!d)return false;if(state.activeDraftId===id&&state.batch)return true;return startBatch(d.templateId,d)}
 function addStudentsToDraft(ids){
   if(!activateDraft())return;const b=state.batch,t=templateById(b.templateId),ref=currentBatchStudent();let added=0,firstNewIndex=b.studentIds.length;
   for(const id of ids){const s=getStudent(id);if(!s||b.studentIds.includes(id))continue;
@@ -582,7 +746,7 @@ function addStudentsToDraft(ids){
 }
 async function removeStudentFromDraft(id){
   if(!activateDraft())return;const b=state.batch,pos=b.studentIds.indexOf(id);if(pos<0)return;
-  if(b.studentIds.length===1){if(!confirm('Bu son öğrencidir. Çıkarırsanız bütün çalışma taslağı silinir. Devam edilsin mi?'))return;await clearDraft();closeModal('completeModal');return}
+  if(b.studentIds.length===1){if(!confirm('Bu son öğrencidir. Çıkarırsanız bu taslak silinir. Devam edilsin mi?'))return;await deleteDraft(b.id);return}
   const s=getStudent(id);if(!confirm(`${s?.name||'Seçilen öğrenci'} taslaktan çıkarılsın mı? Bu öğrenciye ait düzenleme ve bağlantı bilgisi silinir.`))return;
   b.studentIds.splice(pos,1);delete b.values[id];delete b.manualTexts[id];delete b.manualPatterns[id];delete b.autoNet[id];delete b.opened[id];state.selected.delete(id);
   if(pos<b.index)b.index--;b.index=Math.min(b.index,b.studentIds.length-1);
@@ -592,18 +756,22 @@ async function removeStudentFromDraft(id){
 function startBatch(templateId,existingBatch=null){
   if(!state.selected.size&&!existingBatch){toast('Önce en az bir öğrenci seçin.');return false}
   const t=templateById(templateId);if(!t){toast('Hazır mesaj bulunamadı.');return false}
+  if(state.batch){rememberCurrentBatch();const last=state.drafts[state.activeDraftId];if(last){queueDraftOperation(last.id,'save',last);void cacheDrafts();void processDraftOperations(last.id)}clearTimeout(draftTimer)}
   if(existingBatch){
-    state.batch={...existingBatch,values:existingBatch.values||{},manualTexts:existingBatch.manualTexts||{},manualPatterns:existingBatch.manualPatterns||{},autoNet:existingBatch.autoNet||{},opened:existingBatch.opened||{},sharedKeys:new Set(existingBatch.sharedKeys||[]),pinMessage:!!existingBatch.pinMessage,pinnedPattern:existingBatch.pinnedPattern||'',signatureText:existingBatch.signatureText??state.settings.signatureText??SIGNATURE_DEFAULT,awaitingReturn:false};
-    state.selected=new Set(existingBatch.studentIds||[]);state.draftCandidate=null;$('#recoveryBox').classList.remove('show');updateSelectedStatus();
+    const d=normalizeDraft(existingBatch,existingBatch.id);if(!d)return false;
+    state.batch=reviveBatch(d);state.batch.status='active';state.activeDraftId=d.id;state.managedDraftId=d.id;
+    state.selected=new Set(d.studentIds||[]);$('#recoveryBox').classList.remove('show');updateSelectedStatus();
   }else{
     const ids=[...state.selected].map(getStudent).filter(Boolean).sort(sortStudents).map(s=>s.id),fs=fieldsFor(t);
     if(!ids.length){toast('Seçilen öğrenciler bulunamadı. Listeyi yenileyin.');return false}
-    state.batch={templateId:t.id,studentIds:ids,index:0,values:{},manualTexts:{},manualPatterns:{},opened:{},sharedKeys:new Set(fs.filter(f=>f.shared).map(f=>f.key)),autoNet:{},includeSignature:t.id===BLANK_TEMPLATE.id?false:!!state.settings.signatureDefault,signatureText:state.settings.signatureText||SIGNATURE_DEFAULT,pinMessage:t.id===BLANK_TEMPLATE.id&&ids.length>1,pinnedPattern:'',awaitingReturn:false,resumeView:'complete',batchComplete:false,createdAt:Date.now()};
-    for(const id of ids)state.batch.values[id]={};if(t.id!==BLANK_TEMPLATE.id)markRecent(t.id);
+    const id=newDraftId();state.activeDraftId=id;state.managedDraftId=id;
+    state.batch={id,title:`${t.title} - ${new Date().toLocaleDateString('tr-TR')}`,status:'active',revision:0,templateId:t.id,studentIds:ids,index:0,values:{},manualTexts:{},manualPatterns:{},opened:{},sharedKeys:new Set(fs.filter(f=>f.shared).map(f=>f.key)),autoNet:{},includeSignature:t.id===BLANK_TEMPLATE.id?false:!!state.settings.signatureDefault,signatureText:state.settings.signatureText||SIGNATURE_DEFAULT,pinMessage:t.id===BLANK_TEMPLATE.id&&ids.length>1,pinnedPattern:'',awaitingReturn:false,resumeView:'complete',batchComplete:false,createdAt:Date.now()};
+    for(const id of ids)state.batch.values[id]={};if(t.id!==BLANK_TEMPLATE.id)markRecent(t.id)
   }
-  scheduleDraftSave();return true
+  rememberCurrentBatch();scheduleDraftSave();return true
 }
-function openComplete(templateId,existingBatch=null){if(!existingBatch&&(state.batch||state.draftCandidate)&&!confirm('Mevcut çalışma taslağı yeni mesajla değiştirilecek. Mevcut taslağı bırakıp devam etmek istiyor musunuz?'))return;if(!startBatch(templateId,existingBatch))return;renderComplete();openModal('completeModal')}
+function openComplete(templateId,existingBatch=null){if(!startBatch(templateId,existingBatch))return;renderComplete();openModal('completeModal')}
+
 function useTemplate(templateId){return openComplete(templateId)} // Önizleme ve düzenleme hiçbir zaman atlanmaz.
 function currentBatchStudent(){return getStudent(state.batch?.studentIds?.[state.batch.index])}
 function openedCount(){return Object.keys(state.batch?.opened||{}).length}
@@ -619,8 +787,8 @@ function renderComplete(){
   if(b.batchComplete){
     $('#completeTitle').textContent='Gönderim Kontrolü';$('#batchProgress').textContent=`${openedCount()} / ${b.studentIds.length} WhatsApp bağlantısı açıldı`;footer.style.display='none';
     const missing=b.studentIds.length-openedCount();
-    $('#completeBody').innerHTML=`<div class="personHead"><strong>Liste sonuna gelindi</strong><div class="smeta">WhatsApp bağlantısı açılan öğrenci: ${openedCount()} / ${b.studentIds.length}</div></div><div class="notice">${missing?`${missing} öğrenci için bağlantı açılmadı. Listeyi kontrol edebilirsiniz.`:'Seçili tüm öğrenciler için WhatsApp bağlantısı açıldı.'}<br>Mesajın gerçekten gönderilip gönderilmediği WhatsApp üzerinden kontrol edilmelidir.</div><div class="row wrap" style="margin-top:12px"><button class="btn secondary" id="restartBatchBtn">Listeyi Kontrol Et</button><button class="btn" id="finishFromComplete">Çalışmayı Bitir</button></div>`;
-    $('#restartBatchBtn').addEventListener('click',()=>{b.batchComplete=false;b.index=0;renderComplete();scheduleDraftSave()});$('#finishFromComplete').addEventListener('click',()=>finishBatch(true));return;
+    $('#completeBody').innerHTML=`<div class="personHead"><strong>Liste sonuna gelindi</strong><div class="smeta">WhatsApp bağlantısı açılan öğrenci: ${openedCount()} / ${b.studentIds.length}</div></div><div class="notice">${missing?`${missing} öğrenci için bağlantı açılmadı. Listeyi kontrol edebilirsiniz.`:'Seçili tüm öğrenciler için WhatsApp bağlantısı açıldı.'}<br>Mesajın gerçekten gönderilip gönderilmediği WhatsApp üzerinden kontrol edilmelidir.</div><div class="row wrap" style="margin-top:12px"><button class="btn secondary" id="restartBatchBtn">Listeyi Kontrol Et</button><button class="btn secondary" id="pauseFromComplete">⏸ Beklet</button><button class="btn" id="finishFromComplete">Çalışmayı Bitir</button></div>`;
+    $('#restartBatchBtn').addEventListener('click',()=>{b.batchComplete=false;b.index=0;renderComplete();scheduleDraftSave()});$('#finishFromComplete').addEventListener('click',finishBatch);$('#pauseFromComplete').addEventListener('click',pauseCurrentDraft);return;
   }
   footer.style.display='grid';const s=currentBatchStudent();if(!s){closeModal('completeModal');return}
   const fs=fieldsFor(t),vals=b.values[s.id]||{};
@@ -639,7 +807,7 @@ function renderComplete(){
     }
     html+='</div></details>';
   }
-  html+=`<div class="editorTopline"><strong>✏️ Gönderilecek mesaj</strong><span class="counterPill">Doğrudan düzenleyin</span></div><div class="toolbar" id="inlineToolbar"><button class="tool" data-wrap="*|*" title="Kalın"><b>B</b></button><button class="tool" data-wrap="_|_" title="İtalik"><i>I</i></button><button class="tool" data-wrap="~|~" title="Üstü çizili"><s>S</s></button><button class="tool wide" data-prefix="- " title="Madde">• Liste</button><button class="tool wide" data-prefix="1. " title="Numara">1. Liste</button><button class="tool" data-prefix="> " title="Alıntı">❯</button></div><textarea id="inlineComposerText" class="composeTextarea" aria-label="Gönderilecek WhatsApp mesajını düzenleyin" spellcheck="true"></textarea><div class="editorBottomline"><span id="inlineDraftState">Düzenleme taslakta saklanır</span><span id="charCount"></span></div><div class="editorFooterRow"><button id="resetInlineBtn" class="btn secondary small">${b.templateId===BLANK_TEMPLATE.id?'↻ Mesajı temizle':'↻ Şablondan yeniden oluştur'}</button></div><details class="detailsCompact"><summary>👁 WhatsApp önizlemesini göster</summary><div id="completePreview" class="previewBox waPreview" style="margin-bottom:11px"></div></details><div class="row wrap" style="margin-top:10px"><button class="btn ghost small" id="finishFromComplete">Çalışmayı Bitir</button></div>`;
+  html+=`<div class="editorTopline"><strong>✏️ Gönderilecek mesaj</strong><span class="counterPill">Doğrudan düzenleyin</span></div><div class="toolbar" id="inlineToolbar"><button class="tool" data-wrap="*|*" title="Kalın"><b>B</b></button><button class="tool" data-wrap="_|_" title="İtalik"><i>I</i></button><button class="tool" data-wrap="~|~" title="Üstü çizili"><s>S</s></button><button class="tool wide" data-prefix="- " title="Madde">• Liste</button><button class="tool wide" data-prefix="1. " title="Numara">1. Liste</button><button class="tool" data-prefix="> " title="Alıntı">❯</button></div><textarea id="inlineComposerText" class="composeTextarea" aria-label="Gönderilecek WhatsApp mesajını düzenleyin" spellcheck="true"></textarea><div class="editorBottomline"><span id="inlineDraftState">Düzenleme taslakta saklanır</span><span id="charCount"></span></div><div class="editorFooterRow"><button id="resetInlineBtn" class="btn secondary small">${b.templateId===BLANK_TEMPLATE.id?'↻ Mesajı temizle':'↻ Şablondan yeniden oluştur'}</button></div><details class="detailsCompact"><summary>👁 WhatsApp önizlemesini göster</summary><div id="completePreview" class="previewBox waPreview" style="margin-bottom:11px"></div></details><div class="row wrap" style="margin-top:10px"><button class="btn secondary small" id="pauseFromComplete">⏸ Taslakta Beklet</button><button class="btn ghost small" id="finishFromComplete">Çalışmayı Bitir</button></div>`;
   $('#completeBody').innerHTML=html;
   $('#inlineComposerText').value=batchTextFor(s.id);
   $('#prevStudentBtn').disabled=b.index===0;$('#nextStudentBtn').disabled=b.index>=b.studentIds.length-1;$('#nextStudentBtn').textContent=s.phone.valid?'Sonraki →':'Atla →';$('#openWhatsappFromComplete').disabled=!s.phone.valid;$('#openWhatsappFromComplete').textContent=s.phone.valid?"WhatsApp’ta Aç":'Telefon yok';
@@ -676,7 +844,7 @@ function bindCompletionInputs(){
   $('#inlineComposerText')?.addEventListener('input',onInlineInput);
   $('#inlineToolbar')?.addEventListener('click',e=>{const b=e.target.closest('[data-wrap],[data-prefix]');if(!b)return;b.dataset.wrap?applyWrap($('#inlineComposerText'),b.dataset.wrap):applyPrefix($('#inlineComposerText'),b.dataset.prefix)});
   $('#resetInlineBtn')?.addEventListener('click',resetCurrentTemplate);
-  $('#finishFromComplete')?.addEventListener('click',()=>finishBatch());
+  $('#finishFromComplete')?.addEventListener('click',finishBatch);$('#pauseFromComplete')?.addEventListener('click',pauseCurrentDraft);
 }
 function rebaseManualForStudent(id){const b=state.batch,t=templateById(b?.templateId),s=getStudent(id);if(!b||!t||!s)return;const pat=b.pinMessage&&b.pinnedPattern?b.pinnedPattern:b.manualPatterns[id];if(pat!==undefined){b.manualTexts[id]=materializePattern(pat,t,s,b.values[id]||{})}}
 function onFieldInput(el){const b=state.batch,s=currentBatchStudent(),k=el.dataset.field;if(!b||!s)return;const v=el.value,vals=b.values[s.id]||(b.values[s.id]={});if(vals[k]===v)return;vals[k]=v;rebaseManualForStudent(s.id);
@@ -697,10 +865,10 @@ async function openWhatsapp(){
   if(b.pinMessage)applyPinnedComposerText(text);else{b.manualTexts[s.id]=text;b.manualPatterns[s.id]=generalizeManualText(text,t,s,b.values[s.id]||{})}
   b.opened[s.id]=Date.now();b.resumeView='complete';b.awaitingReturn=true;
   if(b.index<b.studentIds.length-1)b.index+=1;else b.batchComplete=true;
-  await saveDraft();window.location.href=`https://wa.me/${s.phone.digits}?text=${encodeURIComponent(text)}`;
+  await saveDraft();if(state.draftSyncReady)await Promise.race([processDraftOperations(state.activeDraftId),new Promise(r=>setTimeout(r,1400))]);window.location.href=`https://wa.me/${s.phone.digits}?text=${encodeURIComponent(text)}`;
 }
 function resumeAfterWhatsapp(){const b=state.batch;if(!b?.awaitingReturn)return;b.awaitingReturn=false;renderComplete();openModal('completeModal');scheduleDraftSave();if(!b.batchComplete)toast('Sıradaki öğrenci hazır.')}
-async function finishBatch(skipConfirm=false){if(!skipConfirm&&!confirm('Çalışmayı bitirip saklanan taslağı temizlemek istiyor musunuz?'))return;await clearDraft();closeModal('completeModal');toast('Çalışma tamamlandı; taslak temizlendi.')}
+
 
 function openTemplateEditor(id=null,copy=false){const t=id?templateById(id):null;state.editing={id:copy?null:id,source:copy?'generated':(t?.source||'generated')};$('#templateModalTitle').textContent=t?(copy?'Hazır Mesajı Kopyala':'Hazır Mesajı Düzenle'):'Hazır Mesaj';$('#tplTitle').value=t?(copy?`${t.title} - Kopya`:t.title):'';$('#tplCategory').value=t?.category||'Diğer';$('#tplBody').value=t?.body||'';state.editorFields=t?fieldsFor(t).map(x=>({...x})):[];$('#restoreThisTemplateBtn').style.display=(t?.source==='system'&&!!state.overrides[t.id]&&!copy)?'block':'none';renderFieldConfigs();refreshTemplatePreview();openModal('templateModal')}
 function renderFieldConfigs(){const el=$('#fieldConfigList');el.innerHTML=state.editorFields.length?state.editorFields.map((f,i)=>`<div class="fieldConfig" data-fi="${i}"><div class="fieldConfigGrid"><div><div class="smallLabel">Alan</div><input type="text" value="{${esc(f.key)}}" readonly></div><div><div class="smallLabel">Etiket</div><input data-fprop="label" data-i="${i}" type="text" value="${esc(f.label||labelFromKey(f.key))}"></div><div><div class="smallLabel">Tür</div><select data-fprop="type" data-i="${i}">${['text','textarea','number','date','time','select','multiselect','calculated'].map(x=>`<option value="${x}" ${f.type===x?'selected':''}>${({text:'Metin',textarea:'Uzun metin',number:'Sayı',date:'Tarih',time:'Saat',select:'Açılır liste',multiselect:'Çoklu seçim',calculated:'Hesaplanan'})[x]}</option>`).join('')}</select></div><div><div class="smallLabel">Seçenekler / Formül</div><input data-fprop="extra" data-i="${i}" type="text" value="${esc(f.type==='calculated'?(f.formula||''):(f.options||[]).join(', '))}" placeholder="Liste: A, B, C · Formül: {SON_NET}-{ONCEKI_NET}"></div></div><div class="row wrap" style="margin-top:8px"><label class="subcheck"><input type="checkbox" data-fprop="required" data-i="${i}" ${f.required!==false?'checked':''}> Zorunlu</label><label class="subcheck"><input type="checkbox" data-fprop="shared" data-i="${i}" ${f.shared?'checked':''}> Tüm öğrencilere uygulanabilir</label><button class="btn danger small" data-remove-field="${i}" style="margin-left:auto">Alanı Kaldır</button></div></div>`).join(''):'<div class="empty">Mesajda doldurulabilir özel alan yok.</div>';el.querySelectorAll('[data-fprop]').forEach(inp=>inp.addEventListener('input',onFieldConfigChange));el.querySelectorAll('[data-fprop]').forEach(inp=>inp.addEventListener('change',onFieldConfigChange));el.querySelectorAll('[data-remove-field]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.removeField;const key=state.editorFields[i].key;state.editorFields.splice(i,1);$('#tplBody').value=$('#tplBody').value.replaceAll(`{${key}}`,'');renderFieldConfigs();refreshTemplatePreview()}))}
@@ -756,7 +924,19 @@ async function importChatGPTMessage(){const parsed=parseChatGPTMessage($('#chatg
 function applyWrap(textarea,wrap){const [a,b]=wrap.split('|'),s=textarea.selectionStart,e=textarea.selectionEnd,sel=textarea.value.slice(s,e)||'metin';textarea.setRangeText(a+sel+b,s,e,'select');textarea.focus();textarea.dispatchEvent(new Event('input'))}
 function applyPrefix(textarea,prefix){const s=textarea.selectionStart,e=textarea.selectionEnd;let start=textarea.value.lastIndexOf('\n',s-1)+1;let end=textarea.value.indexOf('\n',e);if(end<0)end=textarea.value.length;const block=textarea.value.slice(start,end).split('\n').map(x=>prefix+x).join('\n');textarea.setRangeText(block,start,end,'end');textarea.focus();textarea.dispatchEvent(new Event('input'))}
 
-function initFirebase(){try{if(!window.firebase?.initializeApp)throw new Error('SDK yüklenmedi');firebase.initializeApp(firebaseConfig);state.db=firebase.database();setFirebaseStatus('Firebase: bağlandı','ok');state.db.ref(DB_ROOT).on('value',snap=>{const d=snap.val()||{};state.generated=d.generatedMessages||{};state.overrides=d.systemOverrides||{};state.favorites=Array.isArray(d.favorites)?d.favorites.filter(Boolean):[];state.settings={...state.settings,...(d.settings||{})};mirrorRemote();renderSettings();renderMessages();inspectDraft()},()=>setFirebaseStatus('Firebase: erişim hatası','warn'))}catch(e){const local=getLocalMirror();if(local){state.generated=local.generated||{};state.overrides=local.overrides||{};state.favorites=local.favorites||[];state.settings={...state.settings,...(local.settings||{})}}setFirebaseStatus('Firebase: çevrimdışı','warn');renderSettings();renderMessages()}}
+function initFirebase(){
+  try{
+    if(!window.firebase?.initializeApp)throw new Error('SDK yüklenmedi');
+    firebase.initializeApp(firebaseConfig);state.db=firebase.database();setFirebaseStatus('Firebase: bağlandı','ok');
+    // Taslakları ağır olan kök dinleyici yerine bağımsız düğümlerden izleyin.
+    const watch=(key,apply)=>state.db.ref(`${DB_ROOT}/${key}`).on('value',snap=>{apply(snap.val());mirrorRemote();renderSettings();renderMessages()},()=>setFirebaseStatus('Firebase: erişim hatası','warn'));
+    watch('generatedMessages',v=>state.generated=v||{});
+    watch('systemOverrides',v=>state.overrides=v||{});
+    watch('favorites',v=>state.favorites=Array.isArray(v)?v.filter(Boolean):[]);
+    watch('settings',v=>state.settings={...state.settings,...(v||{})});
+    initDraftSync();
+  }catch(e){setFirebaseStatus('Firebase: çevrimdışı','warn');refreshDraftStatus();renderSettings();renderMessages()}
+}
 function setFirebaseStatus(text,cls){const e=$('#firebaseStatus');e.textContent=text;e.className='badge '+cls}
 function mirrorRemote(){localStorage.setItem('fm_remoteMirror',JSON.stringify({generated:state.generated,overrides:state.overrides,favorites:state.favorites,settings:state.settings}))}
 function getLocalMirror(){try{return JSON.parse(localStorage.getItem('fm_remoteMirror')||'null')}catch{return null}}
@@ -793,28 +973,42 @@ function bindEvents(){
   $('#signatureSwitch').addEventListener('click',()=>{$('#signatureSwitch').classList.toggle('on')});$('#saveSignatureBtn').addEventListener('click',async()=>{state.settings.signatureDefault=$('#signatureSwitch').classList.contains('on');state.settings.signatureText=$('#signatureText').value.trim()||SIGNATURE_DEFAULT;await saveRemote('settings',state.settings);toast('İmza ayarları kaydedildi.')});
   $('#saveFavoriteLimitBtn').addEventListener('click',async()=>{let n=parseInt($('#favoriteLimitInput').value,10);if(!Number.isFinite(n))n=APP_CONFIG.favoriteDefault;n=Math.max(APP_CONFIG.favoriteMin,Math.min(APP_CONFIG.favoriteMax,n));if(n<state.favorites.length)return toast(`Şu anda ${state.favorites.length} favoriniz var. Sınır bundan düşük olamaz.`);state.settings.favoriteLimit=n;$('#favoriteLimitInput').value=n;await saveRemote('settings',state.settings);renderMessages();toast(`Favori sınırı ${n} olarak kaydedildi.`)});
   $('#draftManagement').addEventListener('input',e=>{if(e.target.id==='draftStudentSearch'){draftStudentSearch=e.target.value;renderDraftAvailable()}});
+  $('#draftManagement').addEventListener('change',e=>{if(e.target.id==='draftStudentClass'){state.draftClassFilter=e.target.value;renderDraftAvailable()}});
   $('#draftManagement').addEventListener('click',async e=>{
     const el=e.target.closest('button');if(!el)return;
     if(el.hasAttribute('data-draft-go-students'))return openTab('students');
-    if(el.hasAttribute('data-draft-resume')){const d=state.batch||state.draftCandidate;if(d)openComplete(d.templateId,d);return}
+    if(el.hasAttribute('data-draft-close-manage')){state.managedDraftId=null;state.draftMembersExpanded=false;return renderDraftManagement()}
+    if(el.hasAttribute('data-draft-manage'))return selectManagedDraft(el.dataset.draftManage);
+    if(el.hasAttribute('data-draft-members-toggle')){state.draftMembersExpanded=!state.draftMembersExpanded;return renderDraftManagement()}
+    if(el.hasAttribute('data-draft-resume')){const d=state.drafts[el.dataset.draftResume];if(d)openComplete(d.templateId,d);return}
+    if(el.hasAttribute('data-draft-pause')){const id=el.dataset.draftPause,d=state.drafts[id];if(!d)return;if(state.activeDraftId===id&&state.batch){await pauseCurrentDraft()}else await saveDraftRecord({...d,status:'paused'});return}
+    if(el.hasAttribute('data-draft-rename')){const id=el.dataset.draftRename,d=state.drafts[id];if(!d)return;const name=prompt('Taslak adı:',d.title);if(name===null)return;const trimmed=name.trim();if(!trimmed)return toast('Taslak adı boş olamaz.');await saveDraftRecord({...d,title:trimmed.slice(0,100)});return}
     if(el.hasAttribute('data-draft-add-selected'))return addStudentsToDraft([...state.selected]);
     if(el.hasAttribute('data-draft-add'))return addStudentsToDraft([el.dataset.draftAdd]);
     if(el.hasAttribute('data-draft-remove'))return removeStudentFromDraft(el.dataset.draftRemove);
-    if(el.hasAttribute('data-draft-clear')&&confirm('Bütün çalışma taslağı ve kayıtlı mesaj düzenlemeleri silinsin mi?')){await clearDraft();closeModal('completeModal');toast('Taslak temizlendi.')}
+    if(el.hasAttribute('data-draft-clear')){const id=el.dataset.draftClear;if(confirm('Bu taslak ve öğrencilere özel mesaj düzenlemeleri kalıcı olarak silinsin mi?')){await deleteDraft(id);toast('Taslak silindi.')}return}
   });
-  $('#clearDraftSettingsBtn').addEventListener('click',async()=>{if(confirm('Saklanan yarım çalışma taslağı temizlensin mi?')){await clearDraft();toast('Taslak temizlendi.')}});
+  $('#clearDraftSettingsBtn').addEventListener('click',clearAllFirebaseDrafts);
+  $('#finishPauseBtn').addEventListener('click',pauseCurrentDraft);
+  $('#finishArchiveBtn').addEventListener('click',completeCurrentDraft);
+  $('#finishDeleteBtn').addEventListener('click',async()=>{if(!state.batch)return;if(!confirm('Bu çalışma taslağı tüm kayıtlarıyla silinsin mi?'))return;await deleteDraft(state.activeDraftId);closeModal('finishModal');openTab('drafts');toast('Taslak silindi.')});
   $('#deleteGeneratedBtn').addEventListener('click',async()=>{if(!confirm('Özel İstek bölümünden eklenen TÜM ChatGPT mesajları silinsin mi? Bu işlem geri alınamaz.'))return;state.generated={};state.favorites=state.favorites.filter(id=>!id.startsWith('generated_'));await deleteRemote('generatedMessages');await saveRemote('favorites',state.favorites);renderMessages();toast('ChatGPT ile eklenen mesajlar silindi.')});
   $('#hideAllMessagesBtn').addEventListener('click',async()=>{if(!confirm('Tüm hazır mesajlar görünümden kaldırılsın mı? Veriler silinmeyecek.'))return;state.settings.hideAllMessages=true;await saveRemote('settings',state.settings);renderMessages();toast('Hazır mesajlar gizlendi.')});
   $('#showAllMessagesBtn').addEventListener('click',async()=>{state.settings.hideAllMessages=false;await saveRemote('settings',state.settings);renderMessages();toast('Hazır mesajlar tekrar gösteriliyor.')});
   $('#restoreSystemBtn').addEventListener('click',async()=>{if(!confirm(`Standart ${APP_CONFIG.systemMessageCount} mesajdaki tüm düzenlemeler silinip fabrika metinleri geri yüklensin mi? ChatGPT ile eklediğiniz mesajlar etkilenmez.`))return;state.overrides={};state.settings.hideAllMessages=false;await deleteRemote('systemOverrides');await saveRemote('settings',state.settings);renderMessages();toast(`Standart ${APP_CONFIG.systemMessageCount} mesaj geri yüklendi.`)});
-  $('#resumeDraftBtn').addEventListener('click',()=>{if(!state.draftCandidate)return;openComplete(state.draftCandidate.templateId,state.draftCandidate);$('#recoveryBox').classList.remove('show')});$('#discardDraftBtn').addEventListener('click',async()=>{await clearDraft();toast('Taslak temizlendi.')});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)saveDraft();else resumeAfterWhatsapp()});window.addEventListener('pageshow',()=>resumeAfterWhatsapp());window.addEventListener('pagehide',saveDraft);window.addEventListener('beforeunload',()=>{if(state.batch)localStorage.setItem('fm_emergencyDraft',JSON.stringify(snapshotBatch()))});
+  $('#resumeDraftBtn').addEventListener('click',()=>{$('#recoveryBox').dataset.dismissed='1';$('#recoveryBox').classList.remove('show');openTab('drafts')});
+  $('#discardDraftBtn').addEventListener('click',()=>{$('#recoveryBox').dataset.dismissed='1';$('#recoveryBox').classList.remove('show')});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)void saveDraft();else resumeAfterWhatsapp()});
+  window.addEventListener('pageshow',()=>resumeAfterWhatsapp());window.addEventListener('pagehide',()=>{void saveDraft()});
+  window.addEventListener('beforeunload',()=>{if(state.batch)localStorage.setItem('fm_emergencyDraft',JSON.stringify(snapshotBatch()))});
+  window.addEventListener('online',()=>{for(const id of Object.keys(state.draftPending))void processDraftOperations(id)});
+
 }
 
 async function init(){
   $('#versionText').textContent=APP_CONFIG.version;$('#footerMeta').innerHTML=`Sürüm <strong>${esc(APP_CONFIG.version)}</strong> · Kodlama: <strong>${esc(APP_CONFIG.developer)}</strong> · Güncelleme: ${esc(APP_CONFIG.updatedAt)}`;const theme=localStorage.getItem('fm_theme');if(theme)document.documentElement.dataset.theme=theme;
   $('#categoryDatalist').innerHTML=CATEGORIES.map(c=>`<option value="${esc(c)}"></option>`).join('');
-  const emergency=localStorage.getItem('fm_emergencyDraft');if(emergency&&!await kvGet('activeBatch')){try{await kvSet('activeBatch',JSON.parse(emergency))}catch{}}localStorage.removeItem('fm_emergencyDraft');
+  await loadLocalDrafts();
   const mirror=getLocalMirror();if(mirror){state.generated=mirror.generated||{};state.overrides=mirror.overrides||{};state.favorites=mirror.favorites||[];state.settings={...state.settings,...(mirror.settings||{})}}
   state.settings.favoriteLimit=favoriteLimit();bindEvents();renderSettings();renderMessages();renderStudents();renderDraftManagement();initFirebase();loadStudents();
 }
