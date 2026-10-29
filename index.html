@@ -116,8 +116,8 @@
     </div>
     <div class="statusbar">
       <span class="badge" id="sheetStatus">Öğrenciler: bağlanıyor…</span>
-      <span class="badge" id="firebaseStatus">Firebase: bağlanıyor…</span><span class="badge" id="draftSyncStatus">Taslaklar: yerel kayıt</span>
-      <span class="badge" id="selectedStatus">0 öğrenci seçili</span>
+      <span class="badge" id="firebaseStatus">Firebase: bağlanıyor…</span><span class="badge warn" id="draftSyncStatus">Taslaklar: bağlanıyor…</span>
+      <span class="badge" id="selectedStatus" hidden>0 öğrenci seçili</span>
     </div>
   </header>
 
@@ -161,8 +161,8 @@
     <section id="panel-drafts" class="panel">
       <div class="section">
         <div class="row"><h2 class="sectionTitle">📝 Taslak Yönetimi</h2><div class="spacer"></div><span id="draftCount" class="counterPill">0 taslak</span></div>
-        <p class="hint">Birden fazla çalışma oluşturun, taslakları isimlendirin, bekletin, tamamlayın veya silin. Öğrenci listeleri yalnızca istediğinizde gösterilir.</p>
-        <p class="draftCloudInfo">Firebase bağlıysa taslaklar aynı veritabanına bağlanan cihazlar arasında eşitlenir. Çevrimdışıyken yerel kopyanız saklanır.</p>
+        <p class="hint">Taslak oluşturun, adlandırın, bekletin, tamamlayın veya silin.</p>
+        <p class="draftCloudInfo">Taslaklar yalnızca Firebase’de saklanır ve cihazlar arasında eşitlenir.</p>
         <div id="draftManagement"></div>
       </div>
     </section>
@@ -205,7 +205,7 @@ MESAJ:
         <div class="settingRow"><div class="grow"><strong>Favori mesaj sınırı</strong><div class="hint">Varsayılan 15. Mevcut favori sayısından daha düşük bir değer seçilemez.</div></div><div style="width:92px"><input id="favoriteLimitInput" type="number" min="1" max="100" value="15"></div></div>
         <button id="saveFavoriteLimitBtn" class="btn secondary" style="margin-bottom:8px">Favori Sınırını Kaydet</button>
         <div class="settingRow"><div class="grow"><strong>Öğrenci listesini yenile</strong><div class="hint">Google Sheet'teki Ogrenciler sayfasını yeniden kontrol eder.</div></div><button id="settingsRefreshBtn" class="btn secondary small">↻ Yenile</button></div>
-        <div class="settingRow"><div class="grow"><strong>Firebase taslaklarını temizle</strong><div class="hint">Bütün cihazların ortak kullandığı taslakların tamamını Firebase’den kalıcı olarak siler. Hazır mesajlar, favoriler ve öğrenci listesi korunur. Tek taslak silmek için Taslak Yönetimi’ni kullanın.</div></div><button id="clearDraftSettingsBtn" class="btn danger small">Tümünü Sil</button></div>
+        <div class="settingRow"><div class="grow"><strong>Firebase taslaklarını temizle</strong><div class="hint">Firebase’deki tüm taslakları siler. Diğer veriler korunur.</div></div><button id="clearDraftSettingsBtn" class="btn danger small">Tümünü Sil</button></div>
       </div>
       <div class="section dangerZone">
         <h3>Gelişmiş Mesaj Yönetimi</h3>
@@ -215,7 +215,7 @@ MESAJ:
         <div class="settingRow"><div class="grow"><strong>Tüm mesajları tekrar göster</strong><div class="hint">Gizleme işlemini geri alır.</div></div><button id="showAllMessagesBtn" class="btn secondary small">Göster</button></div>
         <div class="settingRow"><div class="grow"><strong>Standart 200 mesajı geri yükle</strong><div class="hint">Standart mesajlarda yaptığınız kalıcı düzenlemeleri fabrika haline döndürür.</div></div><button id="restoreSystemBtn" class="btn secondary small">Geri Yükle</button></div>
       </div>
-      <div class="notice errorNotice"><strong>Veri güvenliği:</strong> Bu HTML, Firebase Authentication kullanmıyor. Veritabanı kurallarınız herkese açıksa, taslak içerikleri de yetkisiz erişime ve değiştirilmeye açıktır. Taslak paylaşımını güvenli kullanmak için Firebase Authentication ve kullanıcıya özel veritabanı kuralları yapılandırılmalıdır. Bu HTML tek başına Firebase sunucu kurallarını değiştiremez.</div>
+      <div class="notice errorNotice"><strong>Veri güvenliği:</strong> Firebase Authentication kullanılmıyor. Veritabanı kuralları açık olursa taslaklara yetkisiz erişilebilir. Erişim kurallarını güvenli yapılandırın.</div>
       <div class="version">Sürüm <strong id="versionText"></strong></div>
     </section>
   </main>
@@ -238,7 +238,7 @@ MESAJ:
 
 <div id="finishModal" class="modal" role="dialog" aria-modal="true"><div class="sheet">
   <div class="sheetHeader"><strong>Çalışmayı Sonlandır</strong><button class="closeBtn" data-close="finishModal">✕</button></div>
-  <div class="sheetBody"><p class="draftActionModalText">Taslağın nasıl saklanmasını istiyorsunuz? WhatsApp bağlantısını açmak mesajın gönderildiğini doğrulamaz.</p>
+  <div class="sheetBody"><p class="draftActionModalText">Çalışmanın durumunu seçin. WhatsApp’ı açmak mesajın gönderildiği anlamına gelmez.</p>
     <div class="draftFinishActions"><button id="finishPauseBtn" class="btn secondary">⏸ Taslağı Beklet</button><button id="finishArchiveBtn" class="btn">✓ Tamamlandı Olarak Sakla</button><button id="finishDeleteBtn" class="btn danger">🗑 Taslağı Sil</button></div>
   </div>
 </div></div>
@@ -489,8 +489,8 @@ const FIELD_META={
 };
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const state={students:[],selected:new Set(),classFilters:new Set(),studentSearch:'',messageSearch:'',category:'Tümü',generated:{},overrides:{},favorites:[],settings:{signatureDefault:false,signatureText:SIGNATURE_DEFAULT,hideAllMessages:false,favoriteLimit:APP_CONFIG.favoriteDefault,recentMessages:[]},db:null,batch:null,editing:null,editorFields:[],drafts:{},remoteDrafts:{},draftPending:{},draftSyncReady:false,draftResetToken:localStorage.getItem('fm_draftResetToken')||'',activeDraftId:null,managedDraftId:null,draftMembersExpanded:false,draftClassFilter:'',currentTab:'students'};
-let toastTimer=null,draftTimer=null,bulkEditTimer=null,undoToastTimer=null,draftStudentSearch='',draftOperationSeq=0;const draftWritesInFlight=new Set();const draftClientId=localStorage.getItem('fm_draftClientId')||('device_'+Math.random().toString(36).slice(2)+Date.now().toString(36));localStorage.setItem('fm_draftClientId',draftClientId);
+const state={students:[],selected:new Set(),classFilters:new Set(),studentSearch:'',messageSearch:'',category:'Tümü',generated:{},overrides:{},favorites:[],settings:{signatureDefault:false,signatureText:SIGNATURE_DEFAULT,hideAllMessages:false,favoriteLimit:APP_CONFIG.favoriteDefault,recentMessages:[]},db:null,batch:null,editing:null,editorFields:[],drafts:{},remoteDrafts:{},draftPending:{},draftSyncReady:false,draftConnected:false,draftResetToken:'',activeDraftId:null,managedDraftId:null,draftMembersExpanded:false,draftClassFilter:'',currentTab:'students'};
+let toastTimer=null,draftTimer=null,bulkEditTimer=null,undoToastTimer=null,draftStudentSearch='',draftOperationSeq=0;const draftWritesInFlight=new Map();const draftClientId='device_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
 
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2600)}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -534,44 +534,62 @@ async function kvSet(k,v){try{const db=await idbOpen();await new Promise((res,re
 async function kvGet(k){try{const db=await idbOpen();return await new Promise((res,rej)=>{const r=db.transaction(IDB_STORE).objectStore(IDB_STORE).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch{try{return JSON.parse(localStorage.getItem('fm_'+k)||'null')}catch{return null}}}
 async function kvDel(k){try{const db=await idbOpen();await new Promise((res,rej)=>{const tx=db.transaction(IDB_STORE,'readwrite');tx.objectStore(IDB_STORE).delete(k);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch{localStorage.removeItem('fm_'+k)}}
 
-// Çoklu taslak veri modeli: her taslak ayrı Firebase düğümünde, yerel yedek ve bekleyen işlem kuyruğuyla tutulur.
+// Taslakların tek kalıcı kaynağı Firebase Realtime Database'dir. Tarayıcıda taslak saklanmaz.
 function newDraftId(){return 'draft_'+(globalThis.crypto?.randomUUID?.()||`${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`).replace(/[^a-zA-Z0-9_-]/g,'_')}
 function normalizeDraft(raw,id){if(!raw||typeof raw!=='object'||!Array.isArray(raw.studentIds)||!raw.templateId)return null;return {...raw,id,status:['active','paused','completed'].includes(raw.status)?raw.status:'paused',title:String(raw.title||templateById(raw.templateId)?.title||'İsimsiz çalışma').slice(0,100),studentIds:raw.studentIds.filter(x=>typeof x==='string'),revision:Number(raw.revision)||0,updatedAt:Number(raw.updatedAt||raw.savedAt||raw.createdAt)||Date.now()}}
 function reviveBatch(d){return {...d,values:d.values||{},manualTexts:d.manualTexts||{},manualPatterns:d.manualPatterns||{},autoNet:d.autoNet||{},opened:d.opened||{},sharedKeys:new Set(d.sharedKeys||[]),pinMessage:!!d.pinMessage,pinnedPattern:d.pinnedPattern||'',signatureText:d.signatureText??state.settings.signatureText??SIGNATURE_DEFAULT,awaitingReturn:false,index:Math.max(0,Math.min(Number(d.index)||0,Math.max(0,d.studentIds.length-1)))}}
 function snapshotBatch(){if(!state.batch)return null;const {bulkEditBase,lastBulkEdit,...rest}=state.batch;return {...rest,sharedKeys:[...state.batch.sharedKeys],savedAt:Date.now()}}
 function draftCounts(){return Object.keys(state.drafts).length}
-function refreshDraftStatus(){const pending=Object.keys(state.draftPending).length;const el=$('#draftSyncStatus');if(!el)return;el.textContent=state.draftSyncReady?(pending?`Taslaklar: ${pending} eşitleniyor`:'Taslaklar: Firebase eşitlendi'):`Taslaklar: yerel kayıt${pending?' · '+pending+' bekliyor':''}`;el.className='badge '+(state.draftSyncReady&&!pending?'ok':'warn')}
-async function cacheDrafts(){await kvSet('draftsV2',state.drafts);await kvSet('draftOpsV2',state.draftPending);refreshDraftStatus()}
+function draftAvailable(){return !!(state.db&&state.draftSyncReady&&state.draftConnected)}
+function requireDraftConnection(){if(draftAvailable())return true;toast('Taslak işlemi için Firebase bağlantısı gerekli.');refreshDraftStatus();return false}
+function refreshDraftStatus(){const pending=Object.keys(state.draftPending).length,el=$('#draftSyncStatus');if(!el)return;el.textContent=!state.draftConnected?'Taslaklar: bağlantı yok':!state.draftSyncReady?'Taslaklar: yükleniyor':pending?`Taslaklar: ${pending} kaydediliyor`:'Taslaklar: Firebase';el.className='badge '+(draftAvailable()&&!pending?'ok':'warn')}
 function rememberCurrentBatch(){if(!state.batch||!state.activeDraftId)return;const d=snapshotBatch();d.updatedAt=Date.now();d.updatedBy=draftClientId;d.resetToken=state.draftResetToken;state.drafts[d.id]=d;state.managedDraftId=state.managedDraftId||d.id}
 function queueDraftOperation(id,type,record){
-  const old=state.draftPending[id],baseRevision=old?old.baseRevision:(record?.revision??state.remoteDrafts[id]?.revision??0);
+  const old=state.draftPending[id],baseRevision=old?old.baseRevision:(state.remoteDrafts[id]?.revision??record?.revision??0);
   if(type==='save'&&record)record.resetToken=state.draftResetToken;
   state.draftPending[id]={type,record:type==='save'?structuredClone(record):null,resetToken:state.draftResetToken,baseRevision,seq:++draftOperationSeq};refreshDraftStatus();
 }
 function scheduleDraftSave(){if(!state.batch)return;rememberCurrentBatch();clearTimeout(draftTimer);draftTimer=setTimeout(()=>{void saveDraft()},450);renderDraftManagement()}
-async function saveDraft(){clearTimeout(draftTimer);if(state.batch){rememberCurrentBatch();const id=state.activeDraftId;queueDraftOperation(id,'save',state.drafts[id]);await cacheDrafts();void processDraftOperations(id)}else await cacheDrafts();renderDraftManagement()}
-async function saveDraftRecord(record){const d=normalizeDraft(record,record.id);if(!d)return;d.updatedAt=Date.now();d.updatedBy=draftClientId;state.drafts[d.id]=d;if(state.activeDraftId===d.id&&state.batch){state.batch.status=d.status;state.batch.title=d.title}queueDraftOperation(d.id,'save',d);await cacheDrafts();void processDraftOperations(d.id);renderDraftManagement()}
-async function deleteDraft(id){if(!id||!state.drafts[id])return;clearTimeout(draftTimer);if(id===state.activeDraftId){state.batch=null;state.activeDraftId=null;closeModal('completeModal');closeModal('finishModal')}const record=state.drafts[id];delete state.drafts[id];queueDraftOperation(id,'delete',record);if(state.managedDraftId===id){state.managedDraftId=null;state.draftMembersExpanded=false}await cacheDrafts();void processDraftOperations(id);inspectDraft();renderDraftManagement()}
+async function saveDraft(){
+  clearTimeout(draftTimer);
+  if(!state.batch)return true;
+  if(!requireDraftConnection())return false;
+  rememberCurrentBatch();const id=state.activeDraftId;
+  queueDraftOperation(id,'save',state.drafts[id]);
+  return await processDraftOperations(id);
+}
+async function saveDraftRecord(record){
+  if(!requireDraftConnection())return false;
+  const d=normalizeDraft(record,record.id);if(!d)return false;
+  d.updatedAt=Date.now();d.updatedBy=draftClientId;state.drafts[d.id]=d;
+  if(state.activeDraftId===d.id&&state.batch){state.batch.status=d.status;state.batch.title=d.title}
+  queueDraftOperation(d.id,'save',d);renderDraftManagement();
+  return await processDraftOperations(d.id);
+}
+async function deleteDraft(id){
+  if(!id||!state.drafts[id]||!requireDraftConnection())return false;
+  clearTimeout(draftTimer);const record=state.drafts[id];
+  queueDraftOperation(id,'delete',record);
+  const success=await processDraftOperations(id);
+  if(!success)return false;
+  if(id===state.activeDraftId){state.batch=null;state.activeDraftId=null;state.selected.clear();renderStudents();closeModal('completeModal');closeModal('finishModal')}
+  if(state.managedDraftId===id){state.managedDraftId=null;state.draftMembersExpanded=false}
+  inspectDraft();return true;
+}
 async function clearDraft(){return deleteDraft(state.managedDraftId||state.activeDraftId)}
-function inspectDraft(){const n=draftCounts();const box=$('#recoveryBox');if(!box)return;box.classList.toggle('show',n>0&&!box.dataset.dismissed);$('#recoveryText').textContent=n?`${n} kayıtlı çalışma bulunuyor. Taslak Yönetimi bölümünden istediğinizi açabilirsiniz.`:'';renderDraftManagement()}
+function inspectDraft(){const n=draftCounts(),box=$('#recoveryBox');if(!box)return;box.classList.toggle('show',n>0&&!box.dataset.dismissed);$('#recoveryText').textContent=n?`${n} kayıtlı çalışma bulunuyor. Taslak Yönetimi bölümünden açabilirsiniz.`:'';renderDraftManagement()}
 function selectManagedDraft(id){if(!state.drafts[id])return;state.managedDraftId=id;state.draftMembersExpanded=false;draftStudentSearch='';state.draftClassFilter='';renderDraftManagement()}
-// Sunucudaki toplu temizleme işareti her cihazda eski çevrimdışı kayıtların tekrar yüklenmesini önler.
+function closeActiveDraft(){state.batch=null;state.activeDraftId=null;state.selected.clear();renderStudents();closeModal('completeModal');closeModal('finishModal')}
 function applyDraftReset(token){
   if(!token||token===state.draftResetToken)return;
   clearTimeout(draftTimer);clearTimeout(bulkEditTimer);
-  state.draftResetToken=token;localStorage.setItem('fm_draftResetToken',token);
-  state.drafts={};state.remoteDrafts={};state.draftPending={};
-  state.batch=null;state.activeDraftId=null;state.managedDraftId=null;
-  state.draftMembersExpanded=false;state.draftClassFilter='';draftStudentSearch='';
-  closeModal('completeModal');closeModal('finishModal');
-  localStorage.removeItem('fm_emergencyDraft');void kvDel('activeBatch');
-  void cacheDrafts();inspectDraft();
-  toast('Firebase taslakları temizlendi; bu cihazdaki eski taslaklar da kaldırıldı.');
+  state.draftResetToken=token;state.drafts={};state.remoteDrafts={};state.draftPending={};
+  state.managedDraftId=null;state.draftMembersExpanded=false;state.draftClassFilter='';draftStudentSearch='';
+  closeActiveDraft();refreshDraftStatus();inspectDraft();
+  toast('Firebase taslakları temizlendi.');
 }
-// Sadece taslak düğümü sıfırlanır; mesajlar, favoriler ve uygulamanın diğer kayıtları etkilenmez.
 async function clearAllFirebaseDrafts(){
-  const btn=$('#clearDraftSettingsBtn');
-  if(!state.db||!state.draftSyncReady)return toast('Firebase taslak bağlantısı hazır değil. Silme işlemi başlatılmadı.');
+  const btn=$('#clearDraftSettingsBtn');if(!requireDraftConnection())return;
   if(btn?.disabled)return;
   const count=draftCounts();
   if(!confirm(`Firebase üzerindeki TÜM taslaklar (${count} görünür kayıt) ve öğrenciye özel mesaj düzenlemeleri bütün cihazlar için kalıcı olarak silinecek.\n\nHazır mesajlar, favoriler ve öğrenci verileri silinmeyecek. Devam edilsin mi?`))return;
@@ -579,60 +597,73 @@ async function clearAllFirebaseDrafts(){
   if(verify!=='SİL')return toast('Firebase taslakları silinmedi.');
   btn.disabled=true;btn.textContent='Siliniyor…';
   try{
-    const online=await state.db.ref('.info/connected').get();
-    if(!online.val())throw new Error('Firebase çevrimdışı.');
     const token=newDraftId();
     await state.db.ref(`${DB_ROOT}/draftsV2`).set({_reset:{token,at:firebase.database.ServerValue.TIMESTAMP,by:draftClientId}});
-    // Dinleyici eşzamanlı çalışsa da çağrıdan sonra yerel önbelleğin temiz olmasını garanti et.
-    applyDraftReset(token);
-    await cacheDrafts();
-    renderDraftManagement();
-    toast('Firebase taslaklarının tamamı temizlendi.');
+    applyDraftReset(token);renderDraftManagement();toast('Firebase taslaklarının tamamı temizlendi.');
   }catch(err){toast(`Firebase taslakları silinemedi: ${err?.message||'Bağlantı veya yetki hatası'}`)}
   finally{btn.disabled=false;btn.textContent='Tümünü Sil'}
 }
-async function pauseCurrentDraft(){if(!state.batch)return;state.batch.status='paused';await saveDraft();state.batch=null;state.activeDraftId=null;closeModal('completeModal');closeModal('finishModal');openTab('drafts');toast('Taslak bekletiliyor; istediğinizde yeniden açabilirsiniz.')}
-async function completeCurrentDraft(){if(!state.batch)return;state.batch.status='completed';await saveDraft();state.batch=null;state.activeDraftId=null;closeModal('completeModal');closeModal('finishModal');openTab('drafts');toast('Çalışma tamamlandı olarak saklandı. İsterseniz silebilirsiniz.')}
+async function pauseCurrentDraft(){
+  if(!state.batch||!requireDraftConnection())return;
+  const prior=state.batch.status;state.batch.status='paused';
+  if(!await saveDraft()){if(state.batch)state.batch.status=prior;return toast('Taslak Firebase’e kaydedilemedi. Bekletme işlemi tamamlanmadı.')}
+  closeActiveDraft();openTab('drafts');toast('Taslak bekletildi.');
+}
+async function completeCurrentDraft(){
+  if(!state.batch||!requireDraftConnection())return;
+  const prior=state.batch.status;state.batch.status='completed';
+  if(!await saveDraft()){if(state.batch)state.batch.status=prior;return toast('Taslak Firebase’e kaydedilemedi. Tamamlama işlemi yapılmadı.')}
+  closeActiveDraft();openTab('drafts');toast('Çalışma tamamlandı olarak saklandı.');
+}
 async function finishBatch(){if(!state.batch)return;openModal('finishModal')}
 async function processDraftOperations(id){
-  if(!state.db||!state.draftSyncReady||draftWritesInFlight.has(id))return;
-  draftWritesInFlight.add(id);
-  try{
-    while(state.draftPending[id]&&state.db&&state.draftSyncReady){
+  if(draftWritesInFlight.has(id))return draftWritesInFlight.get(id);
+  if(!draftAvailable())return false;
+  const task=Promise.resolve().then(async()=>{
+    let failed=false;
+    while(state.draftPending[id]&&draftAvailable()){
       const op=state.draftPending[id];
-      if((op.resetToken||'')!==state.draftResetToken){delete state.draftPending[id];await cacheDrafts();break}
+      if((op.resetToken||'')!==state.draftResetToken){delete state.draftPending[id];failed=true;break}
       let result;
       try{
         result=await state.db.ref(`${DB_ROOT}/draftsV2/${id}`).transaction(current=>{
           const currentRev=Number(current?.revision)||0;
-          // Farklı cihazda daha yeni kayıt varsa hiçbir veriyi sessizce ezme.
+          // Başka cihazda değiştirilmiş bir taslağı sessizce ezmeyin.
           if(currentRev!==op.baseRevision)return;
           return op.type==='delete'?null:{...op.record,revision:currentRev+1};
         },undefined,false);
-      }catch(err){setFirebaseStatus('Firebase: taslak yazılamadı','warn');break}
-      // Toplu temizleme sırasında başlamış, artık geçersiz bir işlemi ekrana geri yazma.
+      }catch(err){setFirebaseStatus('Firebase: taslak kaydedilemedi','warn');toast('Firebase kaydı başarısız. Bağlantıyı kontrol edin.');failed=true;break}
       if((op.resetToken||'')!==state.draftResetToken)break;
       if(!result.committed){
-        const remote=normalizeDraft(result.snapshot?.val(),id);
+        failed=true;const remote=normalizeDraft(result.snapshot?.val(),id);
         if(remote)state.remoteDrafts[id]=remote;else delete state.remoteDrafts[id];
         if(op.type==='save'){
           const newest=state.draftPending[id]?.record||op.record;
           const copyId=newDraftId(),copy={...newest,id:copyId,title:(newest.title||'Taslak').slice(0,76)+' (Çakışma kopyası)',revision:0,createdAt:Date.now(),updatedAt:Date.now()};
           state.drafts[copyId]=copy;
-          if(state.activeDraftId===id){state.activeDraftId=copyId;state.batch=reviveBatch(copy);state.managedDraftId=copyId}
+          if(state.activeDraftId===id){state.activeDraftId=copyId;state.batch=reviveBatch(copy);state.managedDraftId=copyId;updateSelectedStatus()}
           if(remote)state.drafts[id]=remote;else delete state.drafts[id];
-          queueDraftOperation(copyId,'save',copy);void processDraftOperations(copyId);
-          toast('Başka cihazdaki değişiklik korundu. Sizin düzenlemeniz ayrı bir çakışma kopyasına kaydedildi.');
-        }else{if(remote)state.drafts[id]=remote;toast('Taslak başka cihazda değişmiş. Silinmedi; yeniden inceleyin.')}
-        delete state.draftPending[id];await cacheDrafts();break;
+          queueDraftOperation(copyId,'save',copy);
+          // Yeni taslak doğrudan Firebase'e yazılır; tarayıcıya yedek alınmaz.
+          void processDraftOperations(copyId);
+          toast('Başka cihazdaki değişiklik korundu. Düzenlemeniz ayrı taslakta tutuluyor.');
+        }else{if(remote)state.drafts[id]=remote;else delete state.drafts[id];toast('Taslak başka cihazda değişmiş. Silinemedi.')}
+        delete state.draftPending[id];break;
       }
       const current=normalizeDraft(result.snapshot?.val(),id);
       if(current)state.remoteDrafts[id]=current;else delete state.remoteDrafts[id];
-      if(state.draftPending[id]?.seq===op.seq){delete state.draftPending[id];if(current){state.drafts[id]=current;if(state.activeDraftId===id&&state.batch)state.batch.revision=current.revision}else delete state.drafts[id]}
-      else if(state.draftPending[id])state.draftPending[id].baseRevision=current?.revision||0;
-      await cacheDrafts();
+      if(state.draftPending[id]?.seq===op.seq){
+        delete state.draftPending[id];
+        if(current){state.drafts[id]=current;if(state.activeDraftId===id&&state.batch)state.batch.revision=current.revision}
+        else delete state.drafts[id];
+      }else if(state.draftPending[id])state.draftPending[id].baseRevision=current?.revision||0;
+      refreshDraftStatus();
     }
-  }finally{draftWritesInFlight.delete(id);refreshDraftStatus();inspectDraft()}
+    return !failed&&!state.draftPending[id];
+  });
+  draftWritesInFlight.set(id,task);
+  try{return await task}
+  finally{draftWritesInFlight.delete(id);refreshDraftStatus();inspectDraft()}
 }
 function handleRemoteDrafts(raw){
   const serverToken=typeof raw?._reset?.token==='string'?raw._reset.token:'';
@@ -640,42 +671,41 @@ function handleRemoteDrafts(raw){
   const remote={};
   for(const [id,v] of Object.entries(raw||{})){
     if(!id.startsWith('draft_'))continue;
-    // Eski sürüme ait gecikmiş yazılar temizlemeden sonra taslakları yeniden oluşturamaz.
     if(serverToken&&v?.resetToken!==serverToken)continue;
     const d=normalizeDraft(v,id);if(d)remote[id]=d;
   }
   const previous=state.remoteDrafts;state.remoteDrafts=remote;state.draftSyncReady=true;
-  // Sunucudaki silmeler yerel eski önbellek üzerinden geri getirilmez. Bekleyen yerel değişiklikler korunur.
-  const merged={...remote};for(const [id,op] of Object.entries(state.draftPending)){if(op.type==='save')merged[id]=state.drafts[id]||op.record;else delete merged[id]}
+  // Firebase kaynağındaki silmeler önceki tarayıcı kayıtlarından geri getirilmez.
+  const merged={...remote};
+  for(const [id,op] of Object.entries(state.draftPending)){if(op.type==='save')merged[id]=state.drafts[id]||op.record;else delete merged[id]}
   const activeId=state.activeDraftId;
   if(activeId&&state.batch&&!state.draftPending[activeId]){
     if(merged[activeId]){
       if(merged[activeId].revision!==state.batch.revision){
         if($('#completeModal').classList.contains('open')){
-          // Kullanıcının yazmakta olduğu metni uzaktan gelen güncelleme ile aniden değiştirme.
           merged[activeId]=state.drafts[activeId]||snapshotBatch();
-          if(previous[activeId]?.revision!==remote[activeId]?.revision)toast('Bu taslak başka cihazda güncellendi. Açık düzenlemeyi kaydederseniz farklılıklar kopya olarak korunur.');
+          if(previous[activeId]?.revision!==remote[activeId]?.revision)toast('Bu taslak başka cihazda güncellendi. Kaydederken farklılıklar kopyalanır.');
         }else state.batch=reviveBatch(merged[activeId]);
       }
-    }else if($('#completeModal').classList.contains('open')){
+    }else if($('#completeModal').classList.contains('open')&&draftAvailable()){
       const copyId=newDraftId(),copy={...snapshotBatch(),id:copyId,title:(state.batch.title||'Taslak')+' (Kurtarılan kopya)',revision:0};
       state.activeDraftId=copyId;state.batch=reviveBatch(copy);state.managedDraftId=copyId;merged[copyId]=copy;queueDraftOperation(copyId,'save',copy);
-      toast('Taslak başka cihazdan silinmiş. Açık düzenleme yeni taslak olarak korundu.');
-    }else{state.batch=null;state.activeDraftId=null}
+      toast('Taslak başka cihazdan silinmiş. Açık düzenleme yeni taslağa aktarılıyor.');
+    }else closeActiveDraft();
   }
-  state.drafts=merged;void cacheDrafts();for(const id of Object.keys(state.draftPending))void processDraftOperations(id);inspectDraft();renderDraftManagement();
+  state.drafts=merged;
+  refreshDraftStatus();for(const id of Object.keys(state.draftPending))void processDraftOperations(id);
+  updateSelectedStatus();inspectDraft();renderDraftManagement();
 }
-function initDraftSync(){if(!state.db)return;state.db.ref(`${DB_ROOT}/draftsV2`).on('value',snap=>handleRemoteDrafts(snap.val()),()=>{state.draftSyncReady=false;refreshDraftStatus();setFirebaseStatus('Firebase: taslak erişimi yok','warn')});state.db.ref('.info/connected').on('value',snap=>{if(snap.val())for(const id of Object.keys(state.draftPending))void processDraftOperations(id)})}
-async function loadLocalDrafts(){
-  const saved=await kvGet('draftsV2');for(const [id,v] of Object.entries(saved||{})){const d=normalizeDraft(v,id);if(d)state.drafts[id]=d}
-  state.draftPending=await kvGet('draftOpsV2')||{};
-  // v1.0.3 tek taslak verisinin geriye dönük, silmeden önce güvenli göçü.
-  const emergency=localStorage.getItem('fm_emergencyDraft');let legacy=await kvGet('activeBatch');if(!legacy&&emergency){try{const parsed=JSON.parse(emergency);if(!parsed.id||!state.drafts[parsed.id])legacy=parsed}catch{}}localStorage.removeItem('fm_emergencyDraft');
-  if(legacy?.studentIds?.length&&legacy.templateId){
-    const id=newDraftId(),d=normalizeDraft({...legacy,id,title:`${templateById(legacy.templateId)?.title||'Eski çalışma'} (Aktarıldı)`,status:'paused',revision:0},id);
-    if(d){state.drafts[id]=d;queueDraftOperation(id,'save',d);await cacheDrafts();await kvDel('activeBatch');localStorage.removeItem('fm_emergencyDraft')}
-  }
-  refreshDraftStatus();inspectDraft();
+function initDraftSync(){
+  if(!state.db)return;
+  state.db.ref('.info/connected').on('value',snap=>{state.draftConnected=!!snap.val();refreshDraftStatus();if(state.draftConnected&&state.draftSyncReady)for(const id of Object.keys(state.draftPending))void processDraftOperations(id)});
+  state.db.ref(`${DB_ROOT}/draftsV2`).on('value',snap=>handleRemoteDrafts(snap.val()),()=>{state.draftSyncReady=false;refreshDraftStatus();setFirebaseStatus('Firebase: taslak erişimi yok','warn')});
+}
+// Önceki sürümlerin yalnızca taslaklara ait tarayıcı kalıntılarını temizle.
+async function cleanupLegacyDraftStorage(){
+  ['fm_draftResetToken','fm_draftClientId','fm_emergencyDraft','fm_draftsV2','fm_draftOpsV2','fm_activeBatch'].forEach(k=>localStorage.removeItem(k));
+  await Promise.all(['draftsV2','draftOpsV2','activeBatch'].map(k=>kvDel(k)));
 }
 async function loadStudents(){setSheetStatus('Öğrenciler: güncelleniyor…','');try{const arr=await fetchSheetJSONP();if(!arr.length)throw new Error('Öğrenci bulunamadı');state.students=arr.sort(sortStudents);await kvSet('studentsCache',{savedAt:Date.now(),students:state.students});setSheetStatus(`Öğrenciler: ${arr.length} güncel`,'ok');renderStudents();await inspectDraft()}catch(err){const cache=await kvGet('studentsCache');if(cache?.students?.length){state.students=cache.students;setSheetStatus(`Çevrimdışı veri: ${cache.students.length}`,'warn');renderStudents();toast('Google Sheet okunamadı; son kayıtlı öğrenci listesi gösteriliyor.');await inspectDraft()}else{state.students=[];setSheetStatus('Öğrenciler alınamadı','warn');renderStudents();toast('Google Sheet okunamadı. Paylaşım erişimini kontrol edin.')}}}
 function setSheetStatus(text,cls){const e=$('#sheetStatus');e.textContent=text;e.className='badge '+cls}
@@ -686,7 +716,7 @@ function renderStudents(){const classes=[...new Set(state.students.map(s=>s.clas
   $('#visibleCount').textContent=`${visible.length} öğrenci gösteriliyor`;
   $('#studentList').innerHTML=visible.map(s=>`<div class="student ${state.selected.has(s.id)?'selected':''}" data-student="${s.id}"><div class="check">${state.selected.has(s.id)?'✓':''}</div><div style="min-width:0;flex:1"><div class="sname">${esc(s.name)}</div><div class="smeta">${esc(s.class)} · <span class="${s.phone.valid?'':'phoneInvalid'}">${esc(s.phone.display||'Telefon yok')}</span></div></div></div>`).join('')||'<div class="empty">Bu filtreye uygun öğrenci bulunamadı.</div>';updateSelectedStatus();if(state.currentTab==='drafts')renderDraftManagement()}
 function visibleStudents(){const q=state.studentSearch.trim().toLocaleLowerCase('tr-TR');return state.students.filter(s=>(!state.classFilters.size||state.classFilters.has(s.class))&&(!q||s.name.toLocaleLowerCase('tr-TR').includes(q)||s.class.toLocaleLowerCase('tr-TR').includes(q)))}
-function updateSelectedStatus(){const n=state.selected.size;$('#selectedStatus').textContent=`${n} öğrenci seçili`;$('#selectedStatus').className='badge '+(n?'ok':'');$('#goMessagesBtn').disabled=!n;$('#goBlankBtn').disabled=!n;$('#goBlankFromMessagesBtn').disabled=!n}
+function updateSelectedStatus(){const active=!!(state.batch&&state.activeDraftId&&state.batch.status==='active');const n=active?state.batch.studentIds.length:state.selected.size;const badge=$('#selectedStatus');badge.hidden=!(active||((state.currentTab==='students'||state.currentTab==='messages')&&n>0));badge.textContent=`${n} öğrenci seçili`;badge.className='badge '+(n?'ok':'');$('#goMessagesBtn').disabled=!n;$('#goBlankBtn').disabled=!n;$('#goBlankFromMessagesBtn').disabled=!n}
 
 function favoriteLimit(){const n=parseInt(state.settings.favoriteLimit,10);return Math.max(APP_CONFIG.favoriteMin,Math.min(APP_CONFIG.favoriteMax,Number.isFinite(n)?n:APP_CONFIG.favoriteDefault))}
 function recentIds(){return Array.isArray(state.settings.recentMessages)?state.settings.recentMessages:[]}
@@ -732,7 +762,7 @@ function renderDraftManagement(){
   }
   target.innerHTML=html;renderDraftAvailable();
 }
-function activateDraft(){const id=state.managedDraftId||state.activeDraftId;const d=state.drafts[id];if(!d)return false;if(state.activeDraftId===id&&state.batch)return true;return startBatch(d.templateId,d)}
+function activateDraft(){if(!requireDraftConnection())return false;const id=state.managedDraftId||state.activeDraftId;const d=state.drafts[id];if(!d)return false;if(state.activeDraftId===id&&state.batch)return true;return startBatch(d.templateId,d)}
 function addStudentsToDraft(ids){
   if(!activateDraft())return;const b=state.batch,t=templateById(b.templateId),ref=currentBatchStudent();let added=0,firstNewIndex=b.studentIds.length;
   for(const id of ids){const s=getStudent(id);if(!s||b.studentIds.includes(id))continue;
@@ -754,9 +784,10 @@ async function removeStudentFromDraft(id){
   renderStudents();if($('#completeModal').classList.contains('open'))renderComplete();scheduleDraftSave();toast('Öğrenci taslaktan çıkarıldı.');
 }
 function startBatch(templateId,existingBatch=null){
+  if(!requireDraftConnection())return false;
   if(!state.selected.size&&!existingBatch){toast('Önce en az bir öğrenci seçin.');return false}
   const t=templateById(templateId);if(!t){toast('Hazır mesaj bulunamadı.');return false}
-  if(state.batch){rememberCurrentBatch();const last=state.drafts[state.activeDraftId];if(last){queueDraftOperation(last.id,'save',last);void cacheDrafts();void processDraftOperations(last.id)}clearTimeout(draftTimer)}
+  if(state.batch){rememberCurrentBatch();const last=state.drafts[state.activeDraftId];if(last){queueDraftOperation(last.id,'save',last);void processDraftOperations(last.id)}clearTimeout(draftTimer)}
   if(existingBatch){
     const d=normalizeDraft(existingBatch,existingBatch.id);if(!d)return false;
     state.batch=reviveBatch(d);state.batch.status='active';state.activeDraftId=d.id;state.managedDraftId=d.id;
@@ -768,7 +799,7 @@ function startBatch(templateId,existingBatch=null){
     state.batch={id,title:`${t.title} - ${new Date().toLocaleDateString('tr-TR')}`,status:'active',revision:0,templateId:t.id,studentIds:ids,index:0,values:{},manualTexts:{},manualPatterns:{},opened:{},sharedKeys:new Set(fs.filter(f=>f.shared).map(f=>f.key)),autoNet:{},includeSignature:t.id===BLANK_TEMPLATE.id?false:!!state.settings.signatureDefault,signatureText:state.settings.signatureText||SIGNATURE_DEFAULT,pinMessage:t.id===BLANK_TEMPLATE.id&&ids.length>1,pinnedPattern:'',awaitingReturn:false,resumeView:'complete',batchComplete:false,createdAt:Date.now()};
     for(const id of ids)state.batch.values[id]={};if(t.id!==BLANK_TEMPLATE.id)markRecent(t.id)
   }
-  rememberCurrentBatch();scheduleDraftSave();return true
+  rememberCurrentBatch();updateSelectedStatus();scheduleDraftSave();return true
 }
 function openComplete(templateId,existingBatch=null){if(!startBatch(templateId,existingBatch))return;renderComplete();openModal('completeModal')}
 
@@ -861,11 +892,12 @@ async function openWhatsapp(){
   const b=state.batch,t=templateById(b?.templateId),s=currentBatchStudent();if(!b||!t||!s)return;
   const missing=missingFieldAt(b.index);if(missing){$('#fieldsDetails')?.setAttribute('open','');return toast(`Lütfen “${missing}” alanını doldurun.`)}
   if(!s.phone.valid)return toast('Bu öğrenci için WhatsApp numarası geçerli değil.');
+  if(!requireDraftConnection())return;
   const text=$('#inlineComposerText')?.value??batchTextFor(s.id);if(!text.trim())return toast('Gönderilecek mesaj boş olamaz.');
   if(b.pinMessage)applyPinnedComposerText(text);else{b.manualTexts[s.id]=text;b.manualPatterns[s.id]=generalizeManualText(text,t,s,b.values[s.id]||{})}
   b.opened[s.id]=Date.now();b.resumeView='complete';b.awaitingReturn=true;
   if(b.index<b.studentIds.length-1)b.index+=1;else b.batchComplete=true;
-  await saveDraft();if(state.draftSyncReady)await Promise.race([processDraftOperations(state.activeDraftId),new Promise(r=>setTimeout(r,1400))]);window.location.href=`https://wa.me/${s.phone.digits}?text=${encodeURIComponent(text)}`;
+  if(!await saveDraft()){toast('Mesaj ilerlemesi Firebase’e kaydedilemedi.');return}window.location.href=`https://wa.me/${s.phone.digits}?text=${encodeURIComponent(text)}`;
 }
 function resumeAfterWhatsapp(){const b=state.batch;if(!b?.awaitingReturn)return;b.awaitingReturn=false;renderComplete();openModal('completeModal');scheduleDraftSave();if(!b.batchComplete)toast('Sıradaki öğrenci hazır.')}
 
@@ -935,7 +967,7 @@ function initFirebase(){
     watch('favorites',v=>state.favorites=Array.isArray(v)?v.filter(Boolean):[]);
     watch('settings',v=>state.settings={...state.settings,...(v||{})});
     initDraftSync();
-  }catch(e){setFirebaseStatus('Firebase: çevrimdışı','warn');refreshDraftStatus();renderSettings();renderMessages()}
+  }catch(e){setFirebaseStatus('Firebase: bağlantı yok','warn');state.draftConnected=false;refreshDraftStatus();renderSettings();renderMessages()}
 }
 function setFirebaseStatus(text,cls){const e=$('#firebaseStatus');e.textContent=text;e.className='badge '+cls}
 function mirrorRemote(){localStorage.setItem('fm_remoteMirror',JSON.stringify({generated:state.generated,overrides:state.overrides,favorites:state.favorites,settings:state.settings}))}
@@ -944,7 +976,7 @@ async function saveRemote(path,val){const localApply=()=>{mirrorRemote()};try{if
 async function deleteRemote(path){try{if(state.db)await state.db.ref(`${DB_ROOT}/${path}`).remove();mirrorRemote()}catch{mirrorRemote();toast('Firebase silme işlemi şu an tamamlanamadı.')}}
 
 function renderSettings(){$('#signatureText').value=state.settings.signatureText||SIGNATURE_DEFAULT;$('#signatureSwitch').classList.toggle('on',!!state.settings.signatureDefault);$('#favoriteLimitInput').value=favoriteLimit()}
-function openTab(tab){state.currentTab=tab;$$('.panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));$$('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='messages')renderMessages();if(tab==='drafts')renderDraftManagement();if(tab==='settings')renderSettings();window.scrollTo({top:0,behavior:'smooth'})}
+function openTab(tab){state.currentTab=tab;updateSelectedStatus();$$('.panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));$$('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='messages')renderMessages();if(tab==='drafts')renderDraftManagement();if(tab==='settings')renderSettings();window.scrollTo({top:0,behavior:'smooth'})}
 function openModal(id){$('#'+id).classList.add('open');document.body.style.overflow='hidden'}
 function closeModal(id){$('#'+id).classList.remove('open');if(!$('.modal.open'))document.body.style.overflow=''}
 
@@ -986,12 +1018,12 @@ function bindEvents(){
     if(el.hasAttribute('data-draft-add-selected'))return addStudentsToDraft([...state.selected]);
     if(el.hasAttribute('data-draft-add'))return addStudentsToDraft([el.dataset.draftAdd]);
     if(el.hasAttribute('data-draft-remove'))return removeStudentFromDraft(el.dataset.draftRemove);
-    if(el.hasAttribute('data-draft-clear')){const id=el.dataset.draftClear;if(confirm('Bu taslak ve öğrencilere özel mesaj düzenlemeleri kalıcı olarak silinsin mi?')){await deleteDraft(id);toast('Taslak silindi.')}return}
+    if(el.hasAttribute('data-draft-clear')){const id=el.dataset.draftClear;if(confirm('Bu taslak ve öğrencilere özel mesaj düzenlemeleri kalıcı olarak silinsin mi?')){if(await deleteDraft(id))toast('Taslak silindi.')}return}
   });
   $('#clearDraftSettingsBtn').addEventListener('click',clearAllFirebaseDrafts);
   $('#finishPauseBtn').addEventListener('click',pauseCurrentDraft);
   $('#finishArchiveBtn').addEventListener('click',completeCurrentDraft);
-  $('#finishDeleteBtn').addEventListener('click',async()=>{if(!state.batch)return;if(!confirm('Bu çalışma taslağı tüm kayıtlarıyla silinsin mi?'))return;await deleteDraft(state.activeDraftId);closeModal('finishModal');openTab('drafts');toast('Taslak silindi.')});
+  $('#finishDeleteBtn').addEventListener('click',async()=>{if(!state.batch)return;if(!confirm('Bu çalışma taslağı tüm kayıtlarıyla silinsin mi?'))return;if(await deleteDraft(state.activeDraftId)){closeModal('finishModal');openTab('drafts');toast('Taslak silindi.')}});
   $('#deleteGeneratedBtn').addEventListener('click',async()=>{if(!confirm('Özel İstek bölümünden eklenen TÜM ChatGPT mesajları silinsin mi? Bu işlem geri alınamaz.'))return;state.generated={};state.favorites=state.favorites.filter(id=>!id.startsWith('generated_'));await deleteRemote('generatedMessages');await saveRemote('favorites',state.favorites);renderMessages();toast('ChatGPT ile eklenen mesajlar silindi.')});
   $('#hideAllMessagesBtn').addEventListener('click',async()=>{if(!confirm('Tüm hazır mesajlar görünümden kaldırılsın mı? Veriler silinmeyecek.'))return;state.settings.hideAllMessages=true;await saveRemote('settings',state.settings);renderMessages();toast('Hazır mesajlar gizlendi.')});
   $('#showAllMessagesBtn').addEventListener('click',async()=>{state.settings.hideAllMessages=false;await saveRemote('settings',state.settings);renderMessages();toast('Hazır mesajlar tekrar gösteriliyor.')});
@@ -1000,15 +1032,14 @@ function bindEvents(){
   $('#discardDraftBtn').addEventListener('click',()=>{$('#recoveryBox').dataset.dismissed='1';$('#recoveryBox').classList.remove('show')});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)void saveDraft();else resumeAfterWhatsapp()});
   window.addEventListener('pageshow',()=>resumeAfterWhatsapp());window.addEventListener('pagehide',()=>{void saveDraft()});
-  window.addEventListener('beforeunload',()=>{if(state.batch)localStorage.setItem('fm_emergencyDraft',JSON.stringify(snapshotBatch()))});
-  window.addEventListener('online',()=>{for(const id of Object.keys(state.draftPending))void processDraftOperations(id)});
+  // Taslaklar için sayfa kapanırken yerel kayıt veya çevrimdışı kuyruk oluşturulmaz.
 
 }
 
 async function init(){
   $('#versionText').textContent=APP_CONFIG.version;$('#footerMeta').innerHTML=`Sürüm <strong>${esc(APP_CONFIG.version)}</strong> · Kodlama: <strong>${esc(APP_CONFIG.developer)}</strong> · Güncelleme: ${esc(APP_CONFIG.updatedAt)}`;const theme=localStorage.getItem('fm_theme');if(theme)document.documentElement.dataset.theme=theme;
   $('#categoryDatalist').innerHTML=CATEGORIES.map(c=>`<option value="${esc(c)}"></option>`).join('');
-  await loadLocalDrafts();
+  await cleanupLegacyDraftStorage();refreshDraftStatus();
   const mirror=getLocalMirror();if(mirror){state.generated=mirror.generated||{};state.overrides=mirror.overrides||{};state.favorites=mirror.favorites||[];state.settings={...state.settings,...(mirror.settings||{})}}
   state.settings.favoriteLimit=favoriteLimit();bindEvents();renderSettings();renderMessages();renderStudents();renderDraftManagement();initFirebase();loadStudents();
 }
