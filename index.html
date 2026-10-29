@@ -116,7 +116,7 @@
     </div>
     <div class="statusbar">
       <span class="badge" id="sheetStatus">Öğrenciler: bağlanıyor…</span>
-      <span class="badge" id="firebaseStatus">Firebase: bağlanıyor…</span><span class="badge warn" id="draftSyncStatus">Taslaklar: bağlanıyor…</span>
+      <span class="badge" id="firebaseStatus">Veritabanı: bağlanıyor…</span><span class="badge warn" id="draftSyncStatus">Taslaklar: bağlanıyor…</span>
       <span class="badge" id="selectedStatus" hidden>0 öğrenci seçili</span>
     </div>
   </header>
@@ -162,7 +162,7 @@
       <div class="section">
         <div class="row"><h2 class="sectionTitle">📝 Taslak Yönetimi</h2><div class="spacer"></div><span id="draftCount" class="counterPill">0 taslak</span></div>
         <p class="hint">Taslak oluşturun, adlandırın, bekletin, tamamlayın veya silin.</p>
-        <p class="draftCloudInfo">Taslaklar yalnızca Firebase’de saklanır ve cihazlar arasında eşitlenir.</p>
+        <p class="draftCloudInfo">Taslaklar yalnızca veritabanında saklanır ve cihazlar arasında eşitlenir.</p>
         <div id="draftManagement"></div>
       </div>
     </section>
@@ -205,7 +205,7 @@ MESAJ:
         <div class="settingRow"><div class="grow"><strong>Favori mesaj sınırı</strong><div class="hint">Varsayılan 15. Mevcut favori sayısından daha düşük bir değer seçilemez.</div></div><div style="width:92px"><input id="favoriteLimitInput" type="number" min="1" max="100" value="15"></div></div>
         <button id="saveFavoriteLimitBtn" class="btn secondary" style="margin-bottom:8px">Favori Sınırını Kaydet</button>
         <div class="settingRow"><div class="grow"><strong>Öğrenci listesini yenile</strong><div class="hint">Google Sheet'teki Ogrenciler sayfasını yeniden kontrol eder.</div></div><button id="settingsRefreshBtn" class="btn secondary small">↻ Yenile</button></div>
-        <div class="settingRow"><div class="grow"><strong>Firebase taslaklarını temizle</strong><div class="hint">Firebase’deki tüm taslakları siler. Diğer veriler korunur.</div></div><button id="clearDraftSettingsBtn" class="btn danger small">Tümünü Sil</button></div>
+        <div class="settingRow"><div class="grow"><strong>Veritabanı taslaklarını temizle</strong><div class="hint">Veritabanındaki tüm taslakları siler. Diğer veriler korunur.</div></div><button id="clearDraftSettingsBtn" class="btn danger small">Tümünü Sil</button></div>
       </div>
       <div class="section dangerZone">
         <h3>Gelişmiş Mesaj Yönetimi</h3>
@@ -215,7 +215,7 @@ MESAJ:
         <div class="settingRow"><div class="grow"><strong>Tüm mesajları tekrar göster</strong><div class="hint">Gizleme işlemini geri alır.</div></div><button id="showAllMessagesBtn" class="btn secondary small">Göster</button></div>
         <div class="settingRow"><div class="grow"><strong>Standart 200 mesajı geri yükle</strong><div class="hint">Standart mesajlarda yaptığınız kalıcı düzenlemeleri fabrika haline döndürür.</div></div><button id="restoreSystemBtn" class="btn secondary small">Geri Yükle</button></div>
       </div>
-      <div class="notice errorNotice"><strong>Veri güvenliği:</strong> Firebase Authentication kullanılmıyor. Veritabanı kuralları açık olursa taslaklara yetkisiz erişilebilir. Erişim kurallarını güvenli yapılandırın.</div>
+      <div class="notice errorNotice"><strong>Veri güvenliği:</strong> Kullanıcı kimlik doğrulaması kullanılmıyor. Veritabanı kuralları açık olursa taslaklara yetkisiz erişilebilir. Erişim kurallarını güvenli yapılandırın.</div>
       <div class="version">Sürüm <strong id="versionText"></strong></div>
     </section>
   </main>
@@ -541,8 +541,8 @@ function reviveBatch(d){return {...d,values:d.values||{},manualTexts:d.manualTex
 function snapshotBatch(){if(!state.batch)return null;const {bulkEditBase,lastBulkEdit,...rest}=state.batch;return {...rest,sharedKeys:[...state.batch.sharedKeys],savedAt:Date.now()}}
 function draftCounts(){return Object.keys(state.drafts).length}
 function draftAvailable(){return !!(state.db&&state.draftSyncReady&&state.draftConnected)}
-function requireDraftConnection(){if(draftAvailable())return true;toast('Taslak işlemi için Firebase bağlantısı gerekli.');refreshDraftStatus();return false}
-function refreshDraftStatus(){const pending=Object.keys(state.draftPending).length,el=$('#draftSyncStatus');if(!el)return;el.textContent=!state.draftConnected?'Taslaklar: bağlantı yok':!state.draftSyncReady?'Taslaklar: yükleniyor':pending?`Taslaklar: ${pending} kaydediliyor`:'Taslaklar: Firebase';el.className='badge '+(draftAvailable()&&!pending?'ok':'warn')}
+function requireDraftConnection(){if(draftAvailable())return true;toast('Taslak işlemi için veritabanı bağlantısı gerekli.');refreshDraftStatus();return false}
+function refreshDraftStatus(){const pending=Object.keys(state.draftPending).length,el=$('#draftSyncStatus');if(!el)return;el.textContent=!state.draftConnected?'Taslaklar: bağlantı yok':!state.draftSyncReady?'Taslaklar: yükleniyor':pending?`Taslaklar: ${pending} kaydediliyor`:'Taslaklar: Veritabanı';el.className='badge '+(draftAvailable()&&!pending?'ok':'warn')}
 function rememberCurrentBatch(){if(!state.batch||!state.activeDraftId)return;const d=snapshotBatch();d.updatedAt=Date.now();d.updatedBy=draftClientId;d.resetToken=state.draftResetToken;state.drafts[d.id]=d;state.managedDraftId=state.managedDraftId||d.id}
 function queueDraftOperation(id,type,record){
   const old=state.draftPending[id],baseRevision=old?old.baseRevision:(state.remoteDrafts[id]?.revision??record?.revision??0);
@@ -586,33 +586,33 @@ function applyDraftReset(token){
   state.draftResetToken=token;state.drafts={};state.remoteDrafts={};state.draftPending={};
   state.managedDraftId=null;state.draftMembersExpanded=false;state.draftClassFilter='';draftStudentSearch='';
   closeActiveDraft();refreshDraftStatus();inspectDraft();
-  toast('Firebase taslakları temizlendi.');
+  toast('Veritabanı taslakları temizlendi.');
 }
 async function clearAllFirebaseDrafts(){
   const btn=$('#clearDraftSettingsBtn');if(!requireDraftConnection())return;
   if(btn?.disabled)return;
   const count=draftCounts();
-  if(!confirm(`Firebase üzerindeki TÜM taslaklar (${count} görünür kayıt) ve öğrenciye özel mesaj düzenlemeleri bütün cihazlar için kalıcı olarak silinecek.\n\nHazır mesajlar, favoriler ve öğrenci verileri silinmeyecek. Devam edilsin mi?`))return;
+  if(!confirm(`Veritabanındaki TÜM taslaklar (${count} görünür kayıt) ve öğrenciye özel mesaj düzenlemeleri bütün cihazlar için kalıcı olarak silinecek.\n\nHazır mesajlar, favoriler ve öğrenci verileri silinmeyecek. Devam edilsin mi?`))return;
   const verify=prompt('İşlemi doğrulamak için büyük harflerle SİL yazın:');
-  if(verify!=='SİL')return toast('Firebase taslakları silinmedi.');
+  if(verify!=='SİL')return toast('Veritabanı taslakları silinmedi.');
   btn.disabled=true;btn.textContent='Siliniyor…';
   try{
     const token=newDraftId();
     await state.db.ref(`${DB_ROOT}/draftsV2`).set({_reset:{token,at:firebase.database.ServerValue.TIMESTAMP,by:draftClientId}});
-    applyDraftReset(token);renderDraftManagement();toast('Firebase taslaklarının tamamı temizlendi.');
-  }catch(err){toast(`Firebase taslakları silinemedi: ${err?.message||'Bağlantı veya yetki hatası'}`)}
+    applyDraftReset(token);renderDraftManagement();toast('Veritabanı taslaklarının tamamı temizlendi.');
+  }catch(err){toast(`Veritabanı taslakları silinemedi: ${err?.message||'Bağlantı veya yetki hatası'}`)}
   finally{btn.disabled=false;btn.textContent='Tümünü Sil'}
 }
 async function pauseCurrentDraft(){
   if(!state.batch||!requireDraftConnection())return;
   const prior=state.batch.status;state.batch.status='paused';
-  if(!await saveDraft()){if(state.batch)state.batch.status=prior;return toast('Taslak Firebase’e kaydedilemedi. Bekletme işlemi tamamlanmadı.')}
+  if(!await saveDraft()){if(state.batch)state.batch.status=prior;return toast('Taslak veritabanına kaydedilemedi. Bekletme işlemi tamamlanmadı.')}
   closeActiveDraft();openTab('drafts');toast('Taslak bekletildi.');
 }
 async function completeCurrentDraft(){
   if(!state.batch||!requireDraftConnection())return;
   const prior=state.batch.status;state.batch.status='completed';
-  if(!await saveDraft()){if(state.batch)state.batch.status=prior;return toast('Taslak Firebase’e kaydedilemedi. Tamamlama işlemi yapılmadı.')}
+  if(!await saveDraft()){if(state.batch)state.batch.status=prior;return toast('Taslak veritabanına kaydedilemedi. Tamamlama işlemi yapılmadı.')}
   closeActiveDraft();openTab('drafts');toast('Çalışma tamamlandı olarak saklandı.');
 }
 async function finishBatch(){if(!state.batch)return;openModal('finishModal')}
@@ -632,7 +632,7 @@ async function processDraftOperations(id){
           if(currentRev!==op.baseRevision)return;
           return op.type==='delete'?null:{...op.record,revision:currentRev+1};
         },undefined,false);
-      }catch(err){setFirebaseStatus('Firebase: taslak kaydedilemedi','warn');toast('Firebase kaydı başarısız. Bağlantıyı kontrol edin.');failed=true;break}
+      }catch(err){setFirebaseStatus('Veritabanı: taslak kaydedilemedi','warn');toast('Veritabanı kaydı başarısız. Bağlantıyı kontrol edin.');failed=true;break}
       if((op.resetToken||'')!==state.draftResetToken)break;
       if(!result.committed){
         failed=true;const remote=normalizeDraft(result.snapshot?.val(),id);
@@ -700,7 +700,7 @@ function handleRemoteDrafts(raw){
 function initDraftSync(){
   if(!state.db)return;
   state.db.ref('.info/connected').on('value',snap=>{state.draftConnected=!!snap.val();refreshDraftStatus();if(state.draftConnected&&state.draftSyncReady)for(const id of Object.keys(state.draftPending))void processDraftOperations(id)});
-  state.db.ref(`${DB_ROOT}/draftsV2`).on('value',snap=>handleRemoteDrafts(snap.val()),()=>{state.draftSyncReady=false;refreshDraftStatus();setFirebaseStatus('Firebase: taslak erişimi yok','warn')});
+  state.db.ref(`${DB_ROOT}/draftsV2`).on('value',snap=>handleRemoteDrafts(snap.val()),()=>{state.draftSyncReady=false;refreshDraftStatus();setFirebaseStatus('Veritabanı: taslak erişimi yok','warn')});
 }
 // Önceki sürümlerin yalnızca taslaklara ait tarayıcı kalıntılarını temizle.
 async function cleanupLegacyDraftStorage(){
@@ -897,7 +897,7 @@ async function openWhatsapp(){
   if(b.pinMessage)applyPinnedComposerText(text);else{b.manualTexts[s.id]=text;b.manualPatterns[s.id]=generalizeManualText(text,t,s,b.values[s.id]||{})}
   b.opened[s.id]=Date.now();b.resumeView='complete';b.awaitingReturn=true;
   if(b.index<b.studentIds.length-1)b.index+=1;else b.batchComplete=true;
-  if(!await saveDraft()){toast('Mesaj ilerlemesi Firebase’e kaydedilemedi.');return}window.location.href=`https://wa.me/${s.phone.digits}?text=${encodeURIComponent(text)}`;
+  if(!await saveDraft()){toast('Mesaj ilerlemesi veritabanına kaydedilemedi.');return}window.location.href=`https://wa.me/${s.phone.digits}?text=${encodeURIComponent(text)}`;
 }
 function resumeAfterWhatsapp(){const b=state.batch;if(!b?.awaitingReturn)return;b.awaitingReturn=false;renderComplete();openModal('completeModal');scheduleDraftSave();if(!b.batchComplete)toast('Sıradaki öğrenci hazır.')}
 
@@ -959,21 +959,21 @@ function applyPrefix(textarea,prefix){const s=textarea.selectionStart,e=textarea
 function initFirebase(){
   try{
     if(!window.firebase?.initializeApp)throw new Error('SDK yüklenmedi');
-    firebase.initializeApp(firebaseConfig);state.db=firebase.database();setFirebaseStatus('Firebase: bağlandı','ok');
+    firebase.initializeApp(firebaseConfig);state.db=firebase.database();setFirebaseStatus('Veritabanı: bağlandı','ok');
     // Taslakları ağır olan kök dinleyici yerine bağımsız düğümlerden izleyin.
-    const watch=(key,apply)=>state.db.ref(`${DB_ROOT}/${key}`).on('value',snap=>{apply(snap.val());mirrorRemote();renderSettings();renderMessages()},()=>setFirebaseStatus('Firebase: erişim hatası','warn'));
+    const watch=(key,apply)=>state.db.ref(`${DB_ROOT}/${key}`).on('value',snap=>{apply(snap.val());mirrorRemote();renderSettings();renderMessages()},()=>setFirebaseStatus('Veritabanı: erişim hatası','warn'));
     watch('generatedMessages',v=>state.generated=v||{});
     watch('systemOverrides',v=>state.overrides=v||{});
     watch('favorites',v=>state.favorites=Array.isArray(v)?v.filter(Boolean):[]);
     watch('settings',v=>state.settings={...state.settings,...(v||{})});
     initDraftSync();
-  }catch(e){setFirebaseStatus('Firebase: bağlantı yok','warn');state.draftConnected=false;refreshDraftStatus();renderSettings();renderMessages()}
+  }catch(e){setFirebaseStatus('Veritabanı: bağlantı yok','warn');state.draftConnected=false;refreshDraftStatus();renderSettings();renderMessages()}
 }
 function setFirebaseStatus(text,cls){const e=$('#firebaseStatus');e.textContent=text;e.className='badge '+cls}
 function mirrorRemote(){localStorage.setItem('fm_remoteMirror',JSON.stringify({generated:state.generated,overrides:state.overrides,favorites:state.favorites,settings:state.settings}))}
 function getLocalMirror(){try{return JSON.parse(localStorage.getItem('fm_remoteMirror')||'null')}catch{return null}}
-async function saveRemote(path,val){const localApply=()=>{mirrorRemote()};try{if(state.db)await state.db.ref(`${DB_ROOT}/${path}`).set(val);localApply()}catch{localApply();toast('Firebase kaydı şu an yapılamadı; değişiklik cihazda tutuluyor.')}}
-async function deleteRemote(path){try{if(state.db)await state.db.ref(`${DB_ROOT}/${path}`).remove();mirrorRemote()}catch{mirrorRemote();toast('Firebase silme işlemi şu an tamamlanamadı.')}}
+async function saveRemote(path,val){const localApply=()=>{mirrorRemote()};try{if(state.db)await state.db.ref(`${DB_ROOT}/${path}`).set(val);localApply()}catch{localApply();toast('Veritabanı kaydı şu an yapılamadı; değişiklik cihazda tutuluyor.')}}
+async function deleteRemote(path){try{if(state.db)await state.db.ref(`${DB_ROOT}/${path}`).remove();mirrorRemote()}catch{mirrorRemote();toast('Veritabanında silme işlemi şu an tamamlanamadı.')}}
 
 function renderSettings(){$('#signatureText').value=state.settings.signatureText||SIGNATURE_DEFAULT;$('#signatureSwitch').classList.toggle('on',!!state.settings.signatureDefault);$('#favoriteLimitInput').value=favoriteLimit()}
 function openTab(tab){state.currentTab=tab;updateSelectedStatus();$$('.panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));$$('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='messages')renderMessages();if(tab==='drafts')renderDraftManagement();if(tab==='settings')renderSettings();window.scrollTo({top:0,behavior:'smooth'})}
